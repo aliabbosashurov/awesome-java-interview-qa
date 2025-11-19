@@ -1,3 +1,5 @@
+# Java
+
 ### 1.How many features does Java have?
 
 > Key modern Java features (Java 21+) include:
@@ -2087,8 +2089,6 @@ Execution order:
 > 8, 9, A, or B → RFC 4122 (standard format)
 ---
 
-# MODULE 3
-
 ### 214. What is an Exception?
 
 > An Exception is an **unexpected event** that occurs during program execution and disrupts the normal flow of
@@ -2285,6 +2285,8 @@ Execution order:
 10. **Propagate wisely** — don’t overuse `throws` clauses.
 
 ---
+
+# MODULE 3 (Collection)
 
 ### 234. What are Generics?
 
@@ -3158,1387 +3160,3927 @@ All `BlockingQueue` and concurrent queue implementations explicitly forbid `null
 
 ---
 
-### 324.
+### 324. What are the sub-interfaces of the Queue interface?
 
->
+> A **Queue** in Java is an ordered collection that processes elements in **FIFO** order — the first inserted is the
+> first removed.  
+> The `Queue` interface defines core methods (`add`, `offer`, `remove`, `poll`, `element`, `peek`) for safe insertion,
+> retrieval, and removal.  
+> It supports multiple implementations:
+
+- **Standard queues** (`PriorityQueue`, `ArrayDeque`)
+- **Concurrent queues** (`ConcurrentLinkedQueue`, `BlockingQueue`)
+- **Specialized forms** (`DelayQueue`, `SynchronousQueue`)
+
+---
+
+### 325. What is a PriorityQueue?
+
+> `PriorityQueue` is an unbounded, ordered queue that arranges elements according to their **natural order** or a
+> provided **Comparator**, rather than FIFO.
+`PriorityQueue<E>` (in `java.util`) ensures that the element with the **highest priority** (lowest value in natural
+> order) is always at the head.  
+> Insertion (`offer`) and removal (`poll`) operations take **O(log n)** time, using a **binary heap** internally.  
+> It does not guarantee order among elements of the same priority, and iteration does not return elements in sorted
+> order.  
+> Typically used for scheduling tasks, event simulation, and algorithms like Dijkstra’s shortest path.
+---
+
+### 326. Can we add null elements to a PriorityQueue?
+
+> No, `PriorityQueue` **does not allow null elements**.
+> Null is reserved to signal the absence of elements in methods like `peek()` or `poll()`.  
+> Adding null would violate its internal comparison contract and cause `NullPointerException` during ordering
+> comparisons.
+
+---
+
+### 327. What are the main characteristics of a PriorityQueue?
+
+- Ordered by natural order or custom `Comparator`
+- Non-thread-safe
+- Disallows `null`
+- Allows duplicates
+- Backed by a binary heap
+
+1. **Ordering:** Elements are arranged by priority, not by insertion order.
+2. **Performance:** Insertion/removal are `O(log n)`; peek is `O(1)`.
+3. **Duplicates:** Allowed, but order among equals is unspecified.
+4. **Capacity:** Unbounded, though internally array-backed.
+5. **Thread-safety:** Must be externally synchronized if used concurrently.
+
+---
+
+### 328. Is PriorityQueue thread-safe?
+
+> No, `PriorityQueue` is **not thread-safe**.
+> Concurrent access without external synchronization can cause race conditions or heap corruption.  
+> For concurrent use, Java provides `PriorityBlockingQueue`, which offers thread-safe and blocking semantics while
+> maintaining priority ordering.
+---
+
+### 329. What is a Deque?
+
+> `Deque` (Double-Ended Queue) is a linear collection that allows insertion and removal of elements from **both ends**.
+`Deque<E>` extends `Queue<E>` and supports both **FIFO** (queue) and **LIFO** (stack) operations.  
+> Common implementations:
+
+- `ArrayDeque` — resizable array-based, fast and non-blocking
+- `LinkedList` — node-based, supports nulls (not recommended in practice)  
+  `Deque` serves as a unified abstraction for stacks and queues, offering methods like `addFirst()`, `addLast()`,
+  `removeFirst()`, and `removeLast()`.
+
+---
+
+### 330. What are the main characteristics of a Deque?
+
+- Supports insertion/removal at both ends
+- Can function as both **FIFO** and **LIFO**
+- Usually non-thread-safe (`ArrayDeque`)
+- No nulls (in most implementations)
+- High performance for stack and queue operations
+
+- `Deque` is versatile — it can serve as:
+- **Queue** → `offerLast()` + `pollFirst()`
+- **Stack** → `push()` + `pop()`  
+  Operations at both ends are **O(1)** in array- or linked-based implementations.  
+  Most Deques are **faster than Stack** and **safer** since `Stack` (based on `Vector`) is synchronized and legacy.
+
+---
+
+### 331. What is LIFO?
+
+> LIFO stands for **Last In, First Out** — the last inserted element is removed first.
+
+> Used in **stack** data structures where push/pop operations occur at the same end.  
+> In Java, `Deque` replaces the legacy `Stack` class as the modern LIFO implementation via methods `push()`, `pop()`,
+> and
+`peek()`.
+
+---
+
+### 332. What is a Map?
+
+> A `Map` is an object that stores **key–value pairs**, where each key is unique and maps to exactly one value.
+> The `Map<K, V>` interface (in `java.util`) represents a data structure that associates keys with values.  
+> Unlike `Collection`, a `Map` does not extend `Collection` because it models a different abstraction — mapping rather
+> than linear storage.  
+> It provides efficient retrieval, update, and deletion based on keys, commonly used for caching, indexing, and lookup
+> tables.
+
+---
+
+### 333. What are the subclasses (or implementations) of the Map interface?
+
+| Implementation      | Ordering                   | Thread-safe              | Null keys/values | Backed by                       |
+|---------------------|----------------------------|--------------------------|------------------|---------------------------------|
+| `HashMap`           | No                         | No                       | Yes (1 null key) | Hash table                      |
+| `LinkedHashMap`     | Insertion or access order  | No                       | Yes              | Hash table + doubly linked list |
+| `TreeMap`           | Sorted by key              | No                       | No               | Red-Black tree                  |
+| `Hashtable`         | No                         | Yes                      | No               | Hash table                      |
+| `ConcurrentHashMap` | No                         | Yes (lock-free segments) | No               | Concurrent hash table           |
+| `WeakHashMap`       | No                         | No                       | Yes              | Weak references                 |
+| `IdentityHashMap`   | No                         | No                       | Yes              | Reference equality              |
+| `EnumMap`           | Natural order of enum keys | No                       | No null keys     | Array-based                     |
+
+---
+
+### 334. What are the main characteristics of a Map?
+
+- Stores unique keys with associated values
+- Provides constant-time average access (`O(1)`) for hash-based implementations
+- May or may not maintain ordering depending on the implementation
+- Allows `null` keys/values (implementation-dependent)
+
+> Maps are optimized for **fast lookups** and **associative data access**.  
+> They allow replacement of values for existing keys and efficient existence checks (`containsKey`, `containsValue`).  
+> Order and thread-safety vary among implementations, allowing flexibility for different use cases such as caching,
+> synchronization, and LRU maps.
+
+---
+
+### 335. Why does Map use the hashCode() method from the Object class?
+
+> Because hash-based maps (like `HashMap`) use `hashCode()` to determine **bucket placement** for keys.
+
+
+> When you insert a key, its `hashCode()` is computed to find the correct **bucket index** in the internal array.  
+> Then `equals()` ensures key uniqueness within that bucket.  
+> To guarantee correct behavior, keys must obey the **hashCode–equals contract**:
+
+- Equal objects must produce the same hash code.
+- Unequal objects may produce different or same hash codes (collisions handled internally).
+
+> In `HashMap`, the key’s `hashCode()` is XORed and shifted for uniform distribution (`(h >>> 16) ^ h`).  
+> Collisions are resolved using linked lists or balanced trees (since Java 8), ensuring O(log n) lookup under
+> collision-heavy loads.
+
+---
+
+### 336.For which operations should we use a Map?
+
+> Use a `Map` when you need **fast key-based access, association, or counting**.
+
+Typical operations:
+
+- **Caching or memoization:** `Map<CacheKey, Result>`
+- **Frequency counting:** `Map<String, Integer>`
+- **Lookup tables:** configuration or routing tables
+- **De-duplication and grouping:** based on unique identifiers  
+  Hash-based maps (e.g., `HashMap`, `ConcurrentHashMap`) are ideal for O(1) average lookups.
+
+---
+
+### 337. What happens if we assign a null value to a Map key?
+
+> The key remains valid; the value is simply `null`.
+
+> In maps that allow `null` values (e.g., `HashMap`, `LinkedHashMap`), storing a `null` value does not remove the
+> entry.  
+`map.get(key)` will return `null`, which could mean either the key is absent or its value is null — ambiguity developers
+> must handle explicitly using `containsKey(key)`.
+> In contrast, `ConcurrentHashMap`, `TreeMap`, and `Hashtable` **disallow nulls**, throwing `NullPointerException`.
+
+---
+
+### 338. What happens if we modify a Map while iterating over it?
+
+> It throws a `ConcurrentModificationException` for fail-fast implementations.
+> Most non-concurrent maps (`HashMap`, `LinkedHashMap`, `TreeMap`) are **fail-fast** — they detect structural
+> modification
+> during iteration via an internal `modCount`.  
+> If modification occurs outside the iterator (`put`, `remove`), the iterator becomes invalid.  
+> This prevents undefined behavior.
+
+> Concurrent maps (`ConcurrentHashMap`, `ConcurrentSkipListMap`) are **fail-safe**, using weakly consistent iterators
+> that
+> tolerate concurrent modifications without exceptions, though they may not reflect all updates in real-time.
+
+---
+
+### 339. What is a HashMap?
+
+> `HashMap` is a hash-based implementation of the `Map` interface that stores key–value pairs and allows constant-time
+> performance for basic operations.
+> `HashMap<K, V>` uses a **hash table** to store entries.  
+> It computes a key’s `hashCode()` to determine its **bucket index**, where the key–value pair (entry) is stored.  
+> It allows one `null` key and multiple `null` values and provides **O(1)** average-time complexity for `get()` and
+`put()` operations.  
+> It is **not thread-safe** and **does not maintain insertion order** (use `LinkedHashMap` if ordering is required).
+
+---
+
+### 340.What are the main characteristics of a HashMap?
+
+- Key–value based data structure
+- Unordered
+- Allows one null key and multiple null values
+- Not thread-safe
+- Average O(1) time complexity
+- Backed by hash table + optional tree bins (post–Java 8)
+
+> `HashMap` ensures fast access through hashing.  
+> It expands dynamically when entries exceed `capacity × loadFactor`, rehashing all existing entries.  
+> It uses **open addressing with chaining**, meaning multiple keys that map to the same bucket are linked (or
+> treeified).
+
+---
+
+### 341.What is the difference between HashMap and HashSet?
+
+> `HashSet` is internally backed by a `HashMap` and stores **only unique elements**, whereas `HashMap` stores *
+*key–value pairs**.
+
+| Feature     | HashMap                               | HashSet                |
+|-------------|---------------------------------------|------------------------|
+| Data stored | Key–Value pairs                       | Only keys              |
+| Backed by   | Hash table (array of nodes)           | HashMap (dummy values) |
+| Duplicates  | Unique keys, duplicate values allowed | No duplicates          |
+| Nulls       | One null key, multiple null values    | One null element       |
+| Use case    | Key-based lookup                      | Uniqueness check       |
+
+> `HashSet` internally uses a `HashMap` where each added element becomes a key, and all values point to a dummy
+> constant (`PRESENT`).
+
+---
+
+### 342. Does HashMap store elements in a specific order?
+
+> No, `HashMap` **does not guarantee any ordering** of its entries. The internal order depends on the hash codes of the
+> keys and the resizing process.  
+> Iteration order can appear arbitrary and may change when rehashing occurs.  
+> If predictable iteration order is needed, use `LinkedHashMap` (insertion/access order) or `TreeMap` (sorted order).
+---
+
+### 343.Can we store duplicate keys in a HashMap?
+
+> No, keys in a `HashMap` must be unique.
+> If a duplicate key is inserted, the new value **replaces** the existing one.  
+> This behavior follows the `Map` contract — each key maps to exactly one value.  
+> Duplicate values, however, are permitted.
+---
+
+### 344. What are the initial capacity and load factor of a HashMap?
+
+- **Default initial capacity:** 16
+- **Default load factor:** 0.75
+
+- **Initial capacity** → number of buckets at creation.
+- **Load factor** → threshold for resizing: when `size > capacity × loadFactor`, the map’s capacity doubles.  
+  This balance (0.75) offers optimal space–time tradeoff between performance and memory.
+
+---
+
+### 345.Which is faster — HashMap or HashSet?
+
+> Performance is nearly identical.
+> Both rely on the same hashing mechanism.  
+> Since `HashSet` internally uses a `HashMap`, their time complexities for `add`, `remove`, and `contains` are the
+> same —
+> O(1) average.  
+> Any slight performance difference is implementation-level, not conceptual.
+
+---
+
+### 346.In how many ways can we retrieve elements from a HashMap?
+
+> There are **three primary ways**:
+
+1. `keySet()` — retrieve all keys
+2. `values()` — retrieve all values
+3. `entrySet()` — retrieve key–value pairs
+
+---
+
+### 347. Internally, where are the elements of a HashMap stored?
+
+> Elements are stored in an array of Node (bucket) objects, indexed by hash code.
+> Each array index (bucket) holds either a linked list or a red–black tree of nodes.
+> When multiple keys map to the same index (collision), entries are chained via next.
+> When the chain exceeds 8 nodes, it is treeified for performance stability.
+
+```java
+static class Node<K, V> implements Map.Entry<K, V> {
+    final int hash;
+    final K key;
+    V value;
+    Node<K, V> next;
+}
+```
+
+---
+
+### 348. What is a LinkedHashMap?
+
+> `LinkedHashMap` is a hash table–based implementation of the `Map` interface that maintains a **predictable iteration
+order** — either insertion order or access order.
+`LinkedHashMap<K, V>` extends `HashMap<K, V>` and adds a **doubly linked list** that connects all entries in the map.  
+> This linked list defines the iteration order — insertion order by default, or access order if the map is constructed
+> with `accessOrder = true`.  
+> It provides all the functionality of `HashMap` while maintaining order consistency, making it useful for caching, LRU
+> implementations, and predictable traversal.
+
+---
+
+### 349.What is the difference between LinkedHashMap and HashMap?
+
+> `LinkedHashMap` maintains order using a linked list, while `HashMap` does not guarantee any ordering.
+
+| Feature     | HashMap                                  | LinkedHashMap                           |
+|-------------|------------------------------------------|-----------------------------------------|
+| Ordering    | Unordered                                | Maintains insertion or access order     |
+| Performance | Slightly faster (no linkage maintenance) | Slightly slower due to link maintenance |
+| Structure   | Hash table                               | Hash table + doubly linked list         |
+| Use case    | Fast lookups                             | Ordered iteration, LRU cache            |
+| Nulls       | One null key, multiple null values       | Same                                    |
+
+---
+
+### 350. Is LinkedHashMap thread-safe?
+
+> No, LinkedHashMap is not thread-safe.
+> Concurrent modifications by multiple threads can corrupt the internal structure.
+> For thread-safe access, it must be externally synchronized using this: or replaced with ConcurrentHashMap if ordering
+> is not required.
+
+```java
+Map<K, V> safeMap = Collections.synchronizedMap(new LinkedHashMap<>());
+```
+
+---
+
+### 351.What are the initial capacity and load factor of a LinkedHashMap?
+
+- Initial capacity: 16
+- Load factor: 0.75 (default)
+
+> These defaults are identical to HashMap because LinkedHashMap inherits its resizing and hashing mechanisms.
+> When the number of entries exceeds capacity × loadFactor, the capacity doubles automatically.
+---
+
+### 352. In what order does LinkedHashMap store its elements?
+
+> By default, insertion order; optionally access order if configured.
+
+- Insertion order (default): Entries appear in the order they were added.
+- Access order: If constructed with new LinkedHashMap<>(initialCapacity, loadFactor, true), the most recently accessed
+  entry moves to the end.
+  This mode is often used for LRU caches.
+
+---
+
+### 353.Is LinkedHashMap synchronized?
+
+> No, it is not synchronized. All LinkedHashMap operations are unsynchronized, just like HashMap.
+> For concurrent access, wrap it with Collections.synchronizedMap() or use ConcurrentLinkedHashMap (available in
+> external
+> libraries like Caffeine for production-grade LRU caches).
+---
+
+### 354.How many null keys can we add to a LinkedHashMap?
+
+> Only one null key is allowed.
+> LinkedHashMap inherits this behavior from HashMap.
+> Internally, the null key always maps to bucket index 0, and inserting another null key replaces the previous entry.
+---
+
+### 355.What is a TreeMap?
+
+> `TreeMap` is a **sorted, navigable map** implementation in Java that stores key-value pairs in **ascending order of
+keys** using a **Red-Black Tree** data structure.
+> `TreeMap<K, V>` implements the `NavigableMap<K, V>` interface and guarantees that the keys are sorted according to
+> their **natural ordering** (if keys implement `Comparable`) or by a **custom Comparator** (if provided at map
+> creation).  
+> It provides log(n) time complexity for insertion, deletion, and search operations.
+
+---
+
+### 356.Should elements stored in a TreeMap implement the Comparator interface?
+
+> Not necessarily — but they must be **comparable in some way**.
+
+- If **no Comparator** is provided at construction time, then all keys **must implement the `Comparable` interface**,
+  defining a natural ordering via `compareTo()`.
+- If a **Comparator** is provided, the keys need not be comparable — the ordering logic comes from the supplied
+  Comparator.
+
+---
+
+### 357.What is the difference between TreeMap and HashMap?
+
+| Feature             | HashMap                | TreeMap                              |
+|---------------------|------------------------|--------------------------------------|
+| **Ordering**        | Unordered              | Sorted (by natural/comparator order) |
+| **Data structure**  | Hash table             | Red-Black Tree                       |
+| **Time complexity** | O(1) for get/put       | O(log n) for get/put                 |
+| **Null keys**       | Allows one null key    | Does not allow null key              |
+| **Null values**     | Allowed                | Allowed                              |
+| **Thread-safety**   | Not thread-safe        | Not thread-safe                      |
+| **Performance**     | Faster (constant time) | Slower (tree balancing overhead)     |
+| **Use case**        | Fast lookup            | Ordered traversal, range queries     |
+
+> TreeMap is typically used when sorted order or range-based operations are needed, whereas HashMap is preferred for
+> constant-time lookups.
+---
+
+### 358. Which data structure does TreeMap use internally?
+
+> TreeMap uses a Red-Black Tree, a type of self-balancing binary search tree.
+> Each node in the Red-Black Tree contains:
+> A key-value pair
+> Links to left and right child nodes
+> A color bit (red or black)
+> This structure guarantees O(log n) lookup and balanced tree height even after multiple insertions or deletions.
+
+```java
+static final class Entry<K, V> implements Map.Entry<K, V> {
+    K key;
+    V value;
+    Entry<K, V> left;
+    Entry<K, V> right;
+    Entry<K, V> parent;
+    boolean color; // true = RED, false = BLACK
+}
+```
+
+---
+
+### 359. Explain how TreeMap works.
+
+> TreeMap maintains entries in a sorted order using a **Red-Black Tree
+** and performs balancing after each insert or delete.
+> When a new key-value pair is inserted, the key is compared using `compareTo()` (natural ordering) or
+`Comparator.compare()` (custom ordering).
+
+- The key is positioned in the tree according to the comparison result.
+- After insertion or deletion, the **Red-Black Tree** adjusts node colors and rotates nodes to maintain balance.
+
+> The map remains sorted by keys, enabling efficient operations such as:
+
+- `firstKey()`: Retrieves the smallest key.
+- `lastKey()`: Retrieves the largest key.
+- `higherKey(K key)`: Finds the smallest key greater than the given key.
+- `subMap(K fromKey, K toKey)`: Returns a portion of the map within a specified range.
+
+---
+
+### 360.Can we add a null key to a TreeMap?
+
+> No, TreeMap does not allow null keys.
+> If no Comparator is used (natural ordering), inserting a null key throws a NullPointerException, because compareTo()
+> cannot be called on a null reference.
+> Even with a Comparator, adding a null key is unsafe and will typically result in a NullPointerException.
+> However, null values are allowed.
+---
+
+### 361.Is TreeMap asynchronous?
+
+> No, TreeMap is not asynchronous or thread-safe.
+---
+
+### 362.What is a WeakHashMap?
+
+> `WeakHashMap` is a `Map` implementation where **keys are stored using weak references**, allowing their entries to be
+> automatically removed by the Garbage Collector when keys are no longer strongly reachable.
+
+> Unlike `HashMap`, which holds strong references to its keys, a `WeakHashMap` uses `WeakReference` objects
+> internally.  
+> When the only reference to a key exists inside the `WeakHashMap`, the JVM’s garbage collector can reclaim that key (
+> and
+> its corresponding entry) automatically.  
+> This makes `WeakHashMap` useful for **caching** or **metadata storage**, where entries should disappear when the key
+> object is no longer in active use.
+
+---
+
+### 363.What is a WeakReference?
+
+> A WeakReference allows an object to be garbage collected even if it’s still referenced, as long as the reference is
+> weak.
+> WeakReference<T> is part of java.lang.ref. It holds a non-strong reference to an object.
+> When the GC detects that an object is only weakly reachable, it clears the reference and may reclaim memory.
+---
+
+### 364.Is WeakHashMap synchronized?
+
+> No, WeakHashMap is not synchronized.
+> Like most collection implementations in java.util, it’s not thread-safe.
+---
+
+### 365.What is the difference between WeakHashMap and HashMap?
+
+| Feature                | HashMap                                 | WeakHashMap                                    |
+|------------------------|-----------------------------------------|------------------------------------------------|
+| **Key reference type** | Strong                                  | Weak                                           |
+| **GC behavior**        | Entries remain until explicitly removed | Entries removed automatically when key is GC’d |
+| **Thread-safety**      | Not synchronized                        | Not synchronized                               |
+| **Order**              | Unordered                               | Unordered                                      |
+| **Null keys**          | One allowed                             | One allowed                                    |
+| **Use case**           | General-purpose data storage            | Caching, temporary associations                |
+| **Memory retention**   | Keys prevent GC                         | Keys do not prevent GC                         |
+
+---
+
+### 366.What is a Shallow Copy?
+
+> A **shallow copy** creates a new object but **copies only references** to the original object’s fields, not the actual
+> objects they point to.
+
+In a shallow copy, primitive fields are duplicated, but reference fields still point to the same memory objects as the
+original.  
+Thus, modifying the referenced objects affects both copies.
+
+Example:
+
+````java
+class User implements Cloneable {
+    String name;
+    Address address;
+
+    public User clone() throws CloneNotSupportedException {
+        return (User) super.clone(); // shallow copy
+    }
+}
+````
+
+---
+
+### 367.What is a Deep Copy?
+
+> A deep copy duplicates the object and all the objects it references, recursively.
+> In a deep copy, both the object and its nested objects are cloned, ensuring complete independence between copies.
+> Changes in one do not affect the other.
+
+```java
+class User implements Cloneable {
+    String name;
+    Address address;
+
+    public User clone() throws CloneNotSupportedException {
+        User copy = (User) super.clone();
+        copy.address = address.clone(); // deep copy
+        return copy;
+    }
+}
+
+``` 
+
+---
+
+### 368. # What is the difference between Deep Copy and Shallow Copy?
+
+| Aspect                 | Shallow Copy              | Deep Copy           |
+|------------------------|---------------------------|---------------------|
+| **Object duplication** | Only top-level object     | Entire object graph |
+| **Reference fields**   | Shared                    | Duplicated          |
+| **Independence**       | Not independent           | Fully independent   |
+| **Memory usage**       | Lower                     | Higher              |
+| **Performance**        | Faster                    | Slower              |
+| **Risk**               | Shared-state side effects | None                |
+
+---
+
+### 369.What is an Iterator?
+
+> An Iterator is an interface for traversing elements of a collection sequentially without exposing its internal
+> representation.
+
+````java
+class Example {
+    public static void main(String[] args) {
+        Iterator<String> it = list.iterator();
+        while (it.hasNext()) {
+            System.out.println(it.next());
+        }
+    }
+}
+````
+
+---
+
+### 370.How many types of Iterators are there in Java?
+
+> Two main types:
+> Fail-Fast Iterator (used in most collections like ArrayList, HashSet)
+> Fail-Safe Iterator (used in concurrent collections like CopyOnWriteArrayList, ConcurrentHashMap)
+---
+
+### 371.What is a ListIterator?
+
+> A ListIterator is a bidirectional iterator specifically for List types, enabling traversal in both directions and
+> element modification.
+> ListIterator extends Iterator and adds methods like:
+
+- boolean hasPrevious()
+- E previous()
+- void add(E e)
+- void set(E e)
+- int nextIndex(), int previousIndex()
+
+---
+
+### 372.What is the difference between ListIterator and Iterator?
+
+| Feature           | Iterator             | ListIterator                 |
+|-------------------|----------------------|------------------------------|
+| **Direction**     | Forward only         | Forward and backward         |
+| **Applicable to** | All collections      | Only Lists                   |
+| **Modification**  | `remove()` only      | `add()`, `set()`, `remove()` |
+| **Index info**    | Not available        | Available                    |
+| **Interface**     | `java.util.Iterator` | `java.util.ListIterator`     |
+
+---
+
+### 373.What are Fail-Safe Iterators?
+
+> Fail-Safe iterators operate on a clone or snapshot of the collection, so they don’t throw exceptions when the
+> collection is modified during iteration.
+> Used in concurrent collections (ConcurrentHashMap, CopyOnWriteArrayList).
+> They do not reflect modifications made during iteration.
+
+```java
+class Example {
+    public static void main(String[] args) {
+        for (String s : new CopyOnWriteArrayList<>(list)) {
+            list.add("new"); // no ConcurrentModificationException
+        }
+    }
+}
+
+```
+
+---
+
+### 374.What are Fail-Fast Iterators?
+
+> Fail-Fast iterators detect structural modifications to the collection during iteration and throw a
+> ConcurrentModificationException.
+> Used in standard collections like ArrayList, HashSet.
+> They track modifications via a modCount field and validate it before each operation.
+
+```java
+class Example {
+    public static void main(String[] args) {
+        for (String s : list) {
+            list.add("X"); // throws ConcurrentModificationException
+        }
+    }
+}
+```
+
+---
+
+### 375.What is the difference between Fail-Fast and Fail-Safe Iterators?
+
+| Aspect                       | Fail-Fast                                | Fail-Safe                          |
+|------------------------------|------------------------------------------|------------------------------------|
+| **Source**                   | Standard collections                     | Concurrent collections             |
+| **Behavior on modification** | Throws `ConcurrentModificationException` | Does not throw exception           |
+| **Mechanism**                | Tracks `modCount`                        | Works on a snapshot                |
+| **Consistency**              | Reflects real-time data                  | May miss concurrent updates        |
+| **Performance**              | Faster                                   | Slightly slower (copying/snapshot) |
+
+---
+
+### 376.What is Collections?
+
+> `Collections` is a **utility class** in `java.util` that provides **static methods** to operate on or return
+> collections — such as sorting, searching, synchronization, and creating immutable or empty collections.
+> Unlike `Collection` (the interface), `Collections` is a **helper class** containing reusable algorithms and factory
+> methods that work with `List`, `Set`, and `Map`.  
+> Examples include sorting, reversing, shuffling, and creating synchronized or unmodifiable wrappers.
+
+---
+
+### 377.What does the sort() method of the Collections class do?
+
+> Collections.sort() arranges the elements of a list in natural order or according to a provided
+---
+
+### 378.What does the shuffle() method of the Collections class do?
+
+> Collections.shuffle() randomly reorders the elements in a list.
+---
+
+### 379. For what purposes do we use the methods of the Collections class?
+
+- **Sorting**:
+    - `sort()`: Sorts a list in natural order.
+    - `reverseOrder()`: Provides a comparator for reverse sorting.
+
+- **Randomization**:
+    - `shuffle()`: Randomly permutes the elements in a list.
+
+- **Searching**:
+    - `binarySearch()`: Performs a binary search on a sorted list.
+
+- **Synchronization**:
+    - `synchronizedList()`, `synchronizedMap()`: Wraps collections to make them thread-safe.
+
+- **Immutability**:
+    - `unmodifiableList()`, `unmodifiableMap()`: Creates unmodifiable views of collections.
+
+- **Bulk Operations**:
+    - `fill()`: Replaces all elements in a list with a specified value.
+    - `copy()`: Copies elements from one list to another.
+    - `reverse()`: Reverses the order of elements in a list.
+
+- **Min/Max Retrieval**:
+    - `min()`, `max()`: Finds the smallest or largest element in a collection.
+
+- **Singleton/Empty Collections**:
+    - `singletonList()`: Creates an immutable list containing only one element.
+    - `emptyList()`: Returns an immutable empty list.
+
+---
+
+### 380.### Question: What is Optional?
+
+> `Optional<T>` is a **container object** introduced to represent a value that may or may not be present, providing a *
+*type-safe alternative to null**.
+`Optional` is part of `java.util` and wraps an object reference. It either contains a **non-null value** (
+`Optional.of(value)`) or is **empty** (`Optional.empty()`).  
+> It’s primarily used to prevent `NullPointerException` and make the absence of a value **explicit** in the API.
+
+---
+
+### 381.Why do we need the isPresent() method of Optional?
+
+> isPresent() checks whether the Optional contains a non-null value.
+> However, using isPresent() + get() is generally discouraged in favor of functional methods like ifPresent(), orElse(),
+> orElseGet(), and orElseThrow(), which are more declarative and avoid null-style checks.
+---
+
+### 382.In which version of Java was Optional introduced?
+
+> Optional was introduced in Java 8.
+> It was added alongside Streams and Lambda expressions as part of Java’s move toward functional programming and
+> null-safety improvements.
+---
+
+### 383.Why sometimes do we return Optional as a method return type?
+
+> We return `Optional<T>` as a **method return type** when the method result **might be absent**, and we want to **avoid
+returning null**. This improves **API clarity** and **null-safety**, eliminating hidden `null` contracts.
+
+> Returning `Optional` explicitly tells callers: “This method may or may not return a value — handle it safely.”
+
+
+---
+
+### 384.What is Properties?
+
+> `Properties` is a subclass of `Hashtable<Object, Object>` that is used to manage configuration data as **key-value
+pairs**, where both keys and values are of type `String`.  
+> It is commonly used to store **application configuration, environment settings, or localization data**.
+
+---
+
+### 385.Why do we use Properties?
+
+We use `Properties` to:
+
+- Store and retrieve **configuration values** in key–value format.
+- **Load configuration** from external files (e.g., `.properties`) instead of hardcoding values.
+- **Easily persist** and **reload** configuration between application runs.
+
+---
+
+### 386.From which files can we read and write Properties?
+
+> Properties can read and write from:
+
+- .properties files (text-based key=value format).
+- XML files (via loadFromXML() and storeToXML()).
+
+---
+
+### 387.What is a Hashtable?
+
+> Hashtable is a legacy key–value-based data structure that stores elements in hash buckets using the hash code of the
+> key.
+> It is synchronized and thread-safe, but slower than modern alternatives like HashMap.
+---
+
+### 388.When do we use a Hashtable?
+
+> Use Hashtable only when you:
+> Need a thread-safe map and cannot use ConcurrentHashMap (legacy compatibility).
+> Are maintaining older Java applications that rely on Hashtable.
+> In modern Java, prefer ConcurrentHashMap for thread safety and HashMap for single-threaded contexts.
+---
+
+### 389.Is Hashtable thread-safe?
+
+> Yes — all methods in Hashtable are synchronized, making it thread-safe.
+> However, this also introduces contention and lower performance in multi-threaded environments.
+> Modern alternative: ConcurrentHashMap.
+---
+
+### 390.When using a Hashtable, do we need to maintain the hashCode() and equals() contracts?
+
+> Yes — Hashtable relies on both hashCode() and equals() to:
+> Compute bucket indices for keys.
+> Resolve collisions and ensure correct key lookup.
+> If these contracts are violated, data retrieval may fail or lead to duplicate entries.
+---
+
+### 391.What is a Stack?
+
+> `Stack` is a legacy class in Java that represents a **Last-In-First-Out (LIFO)** data structure, where the last
+> element pushed is the first one popped.  
+> It extends `Vector` and provides methods such as `push()`, `pop()`, and `peek()`.
+
+> `Stack` is used to manage objects that follow LIFO order — common in recursion tracking, expression evaluation, and
+> undo/redo operations.  
+> Internally, it stores elements in a dynamic array (inherited from `Vector`).
+
+---
+
+### 392.Is Stack synchronized?
+
+> Yes — Stack inherits synchronization from Vector.
+> However, this reduces performance due to coarse-grained locking.
+> For concurrency, prefer ConcurrentLinkedDeque or other non-blocking structures.
+---
+
+### 393.What is the difference between Deque and Stack?
+
+| Feature            | Stack                       | Deque                                             |
+|--------------------|-----------------------------|---------------------------------------------------|
+| **Type**           | Legacy class                | Modern interface (Java 6+)                        |
+| **Backed by**      | Vector                      | Implementations like `ArrayDeque` or `LinkedList` |
+| **Thread-safety**  | Synchronized (slow)         | Non-synchronized (faster)                         |
+| **Recommendation** | Deprecated for new use      | Preferred replacement for stack behavior          |
+| **Methods**        | `push()`, `pop()`, `peek()` | `addFirst()`, `removeFirst()`, `peekFirst()`      |
+
+> **Note**: `ArrayDeque` should be used instead of `Stack` in modern Java.
+---
+
+### 394. What is a Wildcard Type?
+
+> Wildcard types appear in generic type arguments as `?`, `? extends T`, or `? super T`.  
+> They enable **type variance** — allowing code to work safely with a range of parameterized types without losing type
+> safety.
+
+- `? extends T` → *Upper bounded wildcard*: accepts T or its subtypes. Used when you **only read** from a structure.
+- `? super T` → *Lower bounded wildcard*: accepts T or its supertypes. Used when you **only write** into a structure.
+- `?` (unbounded) → means any type; used for read-only operations where type details don’t matter.
+  nable type variance — allowing code to work safely with a range of parameterized types without losing type safety.
+
+**When to use Wildcard Types:**
+
+- Use `? extends T` when a method **only reads** data (covariant access).
+- Use `? super T` when a method **only writes** data (contravariant access).
+- Use unbounded `?` when you neither read nor write — only inspect or clear.
+- Never use wildcards in class declarations — only in **method signatures** or **fields** for flexible polymorphism.
+
+---
+
+### 395.What is i18n (internationalization)?
+
+> *i18n* (internationalization) is the process of designing and preparing software so it can be easily adapted (
+> localized) to different languages, regions, and cultural conventions without changing the codebase.
+> The term *i18n* stands for *internationalization* (first letter “i”, last letter “n”, and 18 letters in between).  
+> It separates **translatable content** (like messages, labels, currencies, dates) from **application logic**, enabling
+> reuse across locales.
+> In Java, internationalization is supported through:
+
+- `Locale` — represents a specific geographical, political, or cultural region.
+- `ResourceBundle` — provides localized resources (strings, objects) for a given locale.
+- Formatting APIs — `NumberFormat`, `DateFormat`, `MessageFormat`, which adapt automatically to locale rules.
+
+---
+
+### 396. What is a ResourceBundle?
+
+> A `ResourceBundle` is a Java class that loads and manages localized resources (text, objects) for a specific locale,
+> typically from `.properties` or `.class` files.
+`ResourceBundle` provides locale-specific values to an application.  
+> Each bundle contains key-value pairs, and Java automatically selects the correct bundle based on the user’s `Locale`.
+
+> At runtime, Java uses the `ResourceBundle.Control` mechanism to determine which bundle to load and caches bundles for
+> performance.  
+> Bundles are located using the current thread’s `ContextClassLoader`.  
+> This caching is locale-sensitive and avoids repeated disk I/O for repeated lookups.
+
+---
+
+### 397. In which situations do we use ResourceBundle?
+
+> Typical use cases:
+
+- Displaying localized UI elements (menu titles, buttons, messages).
+- Providing locale-specific configurations (e.g., date formats or number formats).
+- Managing translations in multi-language web or desktop applications.
+- Integrating with frameworks that support i18n (e.g., Spring’s `MessageSource`, JavaFX, Jakarta EE).
+
+> In enterprise systems, `ResourceBundle` often backs translation services or message resolvers, externalized from code
+> for dynamic updates.
+
+---
+
+# MODULE 4 (Multithreading, Asynchronous, Thread, Lock)
+
+### 398.What is Multitasking?
+---
+
+> Multitasking is the ability of an operating system to execute multiple tasks (processes) seemingly at the same time by
+> rapidly switching between them.
+> In multitasking, the CPU divides its time among multiple independent processes. Each process gets a **time slice** for
+> execution, managed by the OS scheduler.  
+> It creates the illusion of parallelism even on single-core CPUs via context switching.  
+> On multi-core CPUs, multitasking can achieve real parallel execution, with multiple processes running simultaneously
+> on
+> different cores.
+
+> Context switching involves saving and restoring process state (registers, stack, program counter).  
+> This operation is expensive compared to thread switching, as each process has its own **address space**, **memory
+> layout
+**, and **system resources**.  
+> Modern systems use **preemptive multitasking** — the scheduler interrupts running processes to maintain fairness and
+> responsiveness.
+
+---
+
+### 399.What is the Difference Between Multitasking and Multithreading?
+
+> Multitasking involves running multiple processes concurrently, while multithreading involves running multiple threads
+> within a single process concurrently.
+
+- **Multitasking:** Multiple independent processes, each with its own memory and resources.
+- **Multithreading:** Multiple threads within one process share the same memory and resources but execute independently.
+
+> Multithreading is lighter and faster since threads share memory and avoid the heavy overhead of inter-process
+> communication.
+
+- Running Chrome, IntelliJ, and a terminal → multitasking (multiple processes).
+- Chrome having multiple tabs rendering pages simultaneously → multithreading (threads within one process).
+
+> Threads within a process share heap and static memory but have separate stacks.  
+> Because of this shared memory model, multithreading enables efficient communication but requires synchronization to
+> prevent data races.  
+> Multitasking isolates memory per process, providing better fault tolerance but higher context-switch cost.
+
+---
+
+### 400.What is Concurrency?
+
+> Concurrency is the ability to deal with multiple tasks or operations **in progress** at the same time — not
+> necessarily executed simultaneously.
+
+> Concurrency means structuring programs so that multiple units of work overlap in execution.  
+> This includes both **true parallelism** (on multiple cores) and **interleaved execution** (on a single core).  
+> It focuses on *composition* — managing independent tasks efficiently, rather than raw CPU-level parallel execution.
+> Concurrency ≠ parallelism.
+
+- **Concurrency** is about *structure and coordination*.
+- **Parallelism** is about *execution at the same time*.
+
+> In Java, concurrency is managed via thread pools, the ForkJoin framework, and the `java.util.concurrent` package — all
+> backed by JVM-managed threads mapped to native OS threads.
+
+---
+
+### 401.What is a Thread?
+
+> A thread is the smallest unit of execution within a process, sharing the process’s memory and resources but running
+> independently on the CPU.
+> Each thread has its own **stack**, **program counter**, and **execution context** but shares the process’s **heap**, *
+*class metadata**, and **open files**.  
+> Threads enable parallel or asynchronous execution of tasks within one process.
+
+> The JVM maps Java threads to **native OS threads** (1:1 model).  
+> Thread scheduling is delegated to the OS scheduler.  
+> Each thread switch involves saving register context but no memory isolation, making thread creation and switching
+> faster
+> than process-level equivalents.
+
+---
+
+### 402.Question: What is a Process?
+
+> A process is an independent program in execution with its own memory space, system resources, and at least one thread.
+
+> Each process runs in its own virtual address space, managed by the OS.  
+> Processes don’t share memory — they communicate via inter-process communication (IPC) mechanisms such as sockets,
+> shared
+> files, or pipes.  
+> Examples: JVM, browser, database server — each runs as a separate process.
+
+> A process encapsulates:
+
+- Code segment
+- Heap (global memory)
+- Stack (for each thread)
+- System resources (handles, file descriptors, sockets)
+
+---
+
+### 403.What is the Difference Between a Thread and a Process?
+
+> A process is a self-contained execution environment with its own memory and resources.  
+> A thread is a lightweight execution unit within a process that shares its parent’s memory and resources.
+
+| Aspect         | Process           | Thread                       |
+|----------------|-------------------|------------------------------|
+| Memory         | Own address space | Shared with other threads    |
+| Communication  | IPC (expensive)   | Shared memory (fast)         |
+| Creation cost  | High              | Low                          |
+| Isolation      | Strong            | Weak                         |
+| Failure impact | Isolated          | Can crash the entire process |
+
+> Threads are designed for concurrency within a single application, while processes are for isolation and parallel
+> execution across applications.
+> Thread switching requires saving minimal context (registers, stack pointer), while process switching requires full
+> context including memory mapping.  
+> Because of this, thread-based concurrency is faster but more error-prone due to shared-state complexity.  
+> Modern JVMs leverage multi-threaded concurrency heavily, using thread pools and the ForkJoinPool to efficiently
+> utilize
+> CPU cores.
+
+---
+
+### 404.In how many ways can we create a thread in Java?
+
+> A thread can be created in two main ways:
+
+1. By extending the `Thread` class.
+2. By implementing the `Runnable` interface (or `Callable` for return values).
+
+> Creating threads directly is low-level.  
+> In production, prefer `ExecutorService`, which manages thread pooling, lifecycle, and resource reuse, preventing
+> thread
+> explosion.
+
+
+---
+
+### 405.What is Runnable?
+
+> `Runnable` is a functional interface representing a task intended to be executed by a thread, containing a single
+`run()` method.
+> `Runnable` defines:
+
+```java
+
+@FunctionalInterface
+public interface Runnable {
+    void run();
+}
+```
+
+> It represents a unit of work without a return value or checked exceptions.  
+> It is commonly passed to `Thread` or thread pools for execution.
+> Since Java 8, `Runnable` can be used with lambdas, reducing verbosity.  
+`Callable` extends this idea by returning a result and throwing checked exceptions.
+
+---
+
+### 406.Is it better to create a thread using Runnable or by extending the Thread class?
+
+> Implementing `Runnable` is better than extending `Thread`.
+> Reasons:
+
+- Java supports single inheritance — extending `Thread` restricts class hierarchy.
+- `Runnable` separates **task** from **execution**, improving reusability.
+- Thread pools (`ExecutorService`) require `Runnable` or `Callable`, not subclasses of `Thread`.
+
+> The `Thread` class is a wrapper around `Runnable`. Internally, when you call `start()`, it invokes the `Runnable`’s
+`run()` method.  
+> Subclassing `Thread` couples logic with thread management — an anti-pattern for maintainable concurrency.
+
+
+---
+
+### 407.What is the purpose of the join() method in the Thread class?
+
+> `join()` causes the current thread to wait until the target thread completes its execution.
+
+Example:
+
+```java
+class Main {
+    static void main(String[] args) {
+        Thread t = new Thread(() -> System.out.println("Task done"));
+        t.start();
+        t.join(); // main thread waits until t finishes
+    }
+}
+```
+
+> It ensures sequential execution when threads depend on each other’s results.
+> `join()` internally uses `wait()` and thread state monitoring.  
+> It prevents premature termination or inconsistent state when dependent threads need synchronization without locks.
+
+---
+
+### 408.What is the purpose of the stop() method in the Thread class?
+
+> `stop()` forcibly terminates a thread — it is deprecated and unsafe.
+
+> It kills a thread immediately, releasing all locks it holds, potentially leaving shared data in an inconsistent state.
+
+
+> `stop()` throws `ThreadDeath` asynchronously, bypassing normal control flow.  
+> This violates atomicity and visibility guarantees, breaking synchronized blocks.
+
+---
+
+### 409.What is the purpose of the getState() method in the Thread class?
+
+> `getState()` returns the current execution state of a thread.
+> Pssible states (enum `Thread.State`):
+
+- `NEW`
+- `RUNNABLE`
+- `BLOCKED`
+- `WAITING`
+- `TIMED_WAITING`
+- `TERMINATED`
+
+> The JVM updates state transitions via thread lifecycle events in native code.  
+> This is primarily for monitoring or debugging — not for synchronization control.
+
+---
+
+### 410.What does the yield() method in the Thread class do?
+
+> `yield()` hints to the thread scheduler that the current thread is willing to pause to let other threads execute.
+
+> It moves the thread from **RUNNING** to **RUNNABLE**, allowing the scheduler to pick another thread of equal
+> priority.  
+> Behavior is platform-dependent and not guaranteed.
+
+> `yield()` does not release locks or guarantee CPU relinquishing.  
+> On most modern systems, it’s treated as a weak scheduling hint — often ignored by the JVM or OS.
+
+---
+
+### 411.How can two threads share data in Java?
+
+> Threads share data by accessing the same objects in shared memory.
+> Shared objects must be **thread-safe** — either immutable or properly synchronized.
+
+- `volatile` fields for visibility.
+- Concurrent collections (`ConcurrentHashMap`, `CopyOnWriteArrayList`).
+- Higher-level abstractions (`AtomicInteger`, `BlockingQueue`, `CompletableFuture`).
+
+> Java Memory Model ensures visibility and atomicity via *happens-before* relationships.  
+> Synchronization, `volatile`, and concurrent APIs establish memory barriers to prevent stale reads and data races.
+
+---
+
+### 412.Explain the life cycle of a thread.
+
+> A thread in Java goes through several well-defined states managed by the JVM.
+
+> The lifecycle consists of:  
+> **NEW** → when the thread is created but not yet started.  
+> **RUNNABLE** → when the thread is ready or running on the CPU.  
+> **BLOCKED** → when waiting to acquire a monitor lock.  
+> **WAITING** → when waiting indefinitely for another thread’s action (`wait()`, `join()`, etc.).  
+> **TIMED_WAITING** → when waiting with a timeout (`sleep()`, `wait(timeout)`, etc.).  
+> **TERMINATED** → when the thread completes execution or ends due to an exception.
+
+> Internally, transitions are managed by native thread scheduling in the JVM.  
+> For example, `start()` moves a thread from **NEW → RUNNABLE**, and once `run()` completes, it transitions to *
+*TERMINATED**.
+
+---
+
+### 413.What is the difference between sleep() and wait() methods?
+
+> `sleep()` pauses the current thread for a specific time without releasing any locks.  
+> `wait()` pauses the thread until it’s notified and **releases the monitor lock**.
+
+> `sleep()` is a static method of `Thread` and affects only the current thread.  
+> `wait()` is an instance method of `Object` and must be called within a synchronized block.
+
+> `sleep()` does not depend on object monitors.  
+> `wait()` relies on intrinsic locks and coordination between threads through `notify()` or `notifyAll()`.
+
+> `sleep()` is used for time-based pauses, while `wait()` is for inter-thread communication, releasing locks to allow
+> other threads to proceed.
+
+---
+
+### 414.When does a thread’s state change to RUNNABLE?
+
+> A thread enters **RUNNABLE** when it’s eligible to run but not necessarily executing on the CPU.
+> Calling `start()` on a thread object transitions it from **NEW → RUNNABLE**.  
+> The OS scheduler then decides when to allocate CPU time to it.
+---
+
+### 415.When does a thread’s state change to DEAD?
+
+> A thread becomes **TERMINATED (DEAD)** after its `run()` method finishes or when an uncaught exception occurs inside
+> it.
+> Once in the **TERMINATED** state, the thread cannot be restarted — calling `start()` again will throw
+`IllegalThreadStateException`.
+> Threads also die if forcibly stopped (deprecated `stop()`), or if the JVM shuts down.
+
+---
+
+### 416.Can we stop or delete a thread? If yes, how?
+
+> Threads cannot be forcibly deleted or safely stopped once started.
+> The `stop()` method was deprecated because it terminated threads abruptly, releasing locks and corrupting shared
+> data.  
+> The correct approach is to use **cooperative interruption**.
+> Cooperative stopping is achieved with `interrupt()` and an interruption flag:
+
+```java
+class Task implements Runnable {
+    public void run() {
+        while (!Thread.currentThread().isInterrupted()) {
+            // perform work
+        }
+    }
+}
+```
+
+> A thread checks its interrupt status and exits gracefully.  
+> For blocking operations, use interruptible APIs (like `sleep()`, `wait()`, `join()`), which throw
+`InterruptedException`.
+
+---
+
+### 417.What is the purpose of the currentThread() method in the Thread class?
+
+> `Thread.currentThread()` returns a reference to the **currently executing thread**.
+> It’s a static method used to access the running thread object from anywhere in the code, especially useful when
+> working within static contexts or utility methods.
+> It allows you to inspect or modify properties of the active thread (e.g., name, priority, daemon status).  
+> Useful for logging, debugging, or handling thread-local data.
+
+---
+
+### 418. What is a daemon thread?
+
+> A **daemon thread** is a background service thread that runs to support user threads.
+> It does not prevent the JVM from exiting — when all user (non-daemon) threads finish, the JVM terminates all daemon
+> threads automatically.
+
+> Examples include:
+> - Garbage Collector (GC)
+> - Finalizer thread
+> - Background log flusher
+> - Thread pool maintenance workers
+
+---
+
+### 419.When should we use a daemon thread?
+
+> Use daemon threads for **background or maintenance tasks** that should not block JVM shutdown.
+> Ideal scenarios:
+> - Caching or cleanup processes
+> - Monitoring or logging services
+> - Periodic maintenance jobs
+> - Heartbeat or health-check loops
+
+> Avoid daemon threads for tasks that must complete or persist results, since they may be killed abruptly when JVM
+> exits.
+
+---
+
+### 420.What is thread priority?
+
+> Thread priority determines the **relative importance** of threads when competing for CPU time.
+> Each thread has a priority value from **1 (MIN_PRIORITY)** to **10 (MAX_PRIORITY)**, with default being **5 (
+NORM_PRIORITY)**.
+
+---
+
+### 421. What is the difference between threads with high and low priority?
+
+> A high-priority thread gets **preferential access** to CPU scheduling, while a low-priority thread may be delayed when
+> CPU resources are limited.
+
+> However, thread priorities are **advisory**, not strict.  
+> The OS scheduler may ignore them, especially on modern systems with preemptive multitasking.
+
+> Use priorities only when necessary — for example, to favor real-time or time-sensitive tasks — and never rely on them
+> for synchronization or correctness.
+
+---
+
+### 422.What is a race condition?
+
+> A **race condition** occurs when multiple threads access and modify shared data simultaneously, causing unpredictable
+> or inconsistent results.
+> It happens when thread scheduling interleaves operations in ways the program does not anticipate.
+> Multiple threads calling `increment()` may lose updates since read–modify–write is not atomic.
+
+---
+
+### 423.How can we prevent a race condition?
+
+> By ensuring **mutual exclusion** — only one thread accesses shared data at a time.
+> Common mechanisms:
+> - `synchronized` blocks or methods
+> - `ReentrantLock`
+> - Atomic variables (`AtomicInteger`, `AtomicReference`, etc.)
+> - Thread confinement (no sharing)
+> - Immutable objects
+
+> Choose the mechanism based on contention level, fairness requirements, and performance sensitivity.
+
+---
+
+### 424.What is a Lock?
+
+> A `Lock` is a concurrency control mechanism that provides **explicit** locking operations (`lock()` / `unlock()`)
+> unlike implicit synchronization.
+> Defined in `java.util.concurrent.locks.Lock`, it allows more flexible and non-blocking patterns.
+> Always release the lock in a `finally` block to avoid deadlocks.
+
+> Locks support:
+> - Try-lock with timeout
+> - Interruptible locking
+> - Fairness policies
+> - Multiple condition variables per lock
+
+---
+
+### 425.What kind of class is ReentrantLock?
+
+> `ReentrantLock` is a **concrete implementation** of the `Lock` interface that mimics the behavior of intrinsic locks (
+`synchronized`) but adds advanced capabilities.
+> “Reentrant” means the same thread can acquire the lock multiple times without blocking itself.
+
+> Example:
+
+```java
+class Main {
+    public static void main(String[] args) {
+        Lock lock = new ReentrantLock();
+        lock.lock();
+        try {
+            // critical section
+        } finally {
+            lock.unlock();
+        }
+    }
+}
+```
+
+---
+
+### 426.What is the difference between ReentrantLock and the synchronized keyword?
+
+> `synchronized` is **implicit**, simpler, and handled by the JVM — it automatically acquires/releases the monitor
+> lock.  
+> `ReentrantLock` is **explicit**, giving finer control over locking and unlocking.
+
+> Key differences:
+> - **Lock control:** manual with `ReentrantLock`, automatic with `synchronized`
+> - **Interruptibility:** `lockInterruptibly()` supports interruption
+> - **Try-locking:** non-blocking attempt possible with `tryLock()`
+> - **Fairness:** optional FIFO fairness with constructor
+> - **Condition support:** multiple `Condition` objects possible
+> - **Performance:** lower contention overhead under high concurrency
+
+---
+
+### 427.What are the advantages of ReentrantLock over the synchronized keyword?
+
+> - **Interruptible locking** (`lockInterruptibly()`)
+> - **Try-lock capability** to avoid deadlock risk
+> - **Multiple conditions** for complex synchronization
+> - **Fair ordering** option
+> - **Better performance** under high contention
+
+---
+
+### 428. What is a Condition?
+
+> A `Condition` provides thread coordination similar to `wait()` / `notify()`, but tied to a specific `Lock` instance
+> instead of an intrinsic monitor.
+> It enables threads to **await** certain conditions and be **signaled** when ready.
+
+---
+
+### 429.Explain the purpose of the Condition interface.
+
+> The `Condition` interface provides finer control over thread signaling and waiting, decoupling it from intrinsic
+> monitor methods.
+> Each `Condition` instance is bound to a specific `Lock`, ensuring consistent synchronization semantics.
+
+> Benefits:
+> - Multiple independent wait-sets per lock
+> - Explicit control over signal timing (`signal()` / `signalAll()`)
+> - More readable concurrent designs compared to `wait()` / `notify()`
+
+---
+
+### 430.What is synchronized?
+
+> `synchronized` is a Java keyword used to achieve **mutual exclusion** and **visibility** in multithreaded code.
+> It ensures that only one thread at a time can execute the synchronized block or method for a given monitor (lock
+> object), and that changes made inside are visible to other threads.
+> It works by acquiring the monitor associated with an object or class before executing the synchronized code and
+> releasing it automatically afterward.
+
 ---
 
-### 325.
+### 431. At how many levels can we use the synchronized keyword?
 
->
+1. **Method level**
+    - Instance methods → lock is associated with the current object (`this`).
+    - Static methods → lock is associated with the class object (`Class<?>`).
+2. **Block level**
+    - Synchronization on a specific object monitor (custom lock object).
+
 ---
 
-### 326.
+### 432.Why must wait() and notify() methods be called from inside a synchronized block?
 
->
+> Because `wait()`, `notify()`, and `notifyAll()` operate on an **object’s monitor**, and a thread must **own that
+monitor** to call them.
+> If these methods are called outside a synchronized context, the JVM throws `IllegalMonitorStateException`.
+> Synchronization ensures:
+> - Proper ownership of the monitor before waiting or notifying.
+> - Safe visibility and atomic transitions between waiting and running threads.
+> - Prevents race conditions during state checks and notifications.
 ---
 
-### 327.
+### 433. What is the difference between a synchronized method and a synchronized block?
 
->
+> **Synchronized method**
+> - Locks the entire method.
+> - Automatically uses the object’s (or class’s) intrinsic lock.
+> - Simpler, but less granular.
+
+> **Synchronized block**
+> - Locks only a specific section of code.
+> - Allows locking on a specific object, improving concurrency.
+> - Offers finer control and better performance under high contention.
 ---
 
-### 328.
+### 434.What is the difference between a static synchronized method and an instance synchronized method?
 
->
+- **Instance synchronized method** locks on the **instance (this)** monitor.
+  Only one thread can access other synchronized instance methods of the same object.
+
+- **Static synchronized method** locks on the **Class** object of that class (`MyClass.class`).
+  It does not block instance-level locks — both can execute concurrently if they lock different monitors.
+
 ---
 
-### 329.
+### 435.What is volatile?
 
->
+> `volatile` is a field modifier in Java that guarantees **visibility** of changes to a variable across threads.
+> It ensures that all reads and writes go directly to main memory, preventing threads from caching stale values in CPU
+> registers or local caches.
+> It provides a **happens-before** relationship: a write to a volatile variable happens-before every subsequent read of
+> that same variable.
+
 ---
 
-### 330.
+### 436.To which variables can we apply the volatile keyword?
 
->
+> The `volatile` keyword can be applied only to **instance and static variables** of primitive or reference types.
+> It cannot be used on:
+> - local variables (since they’re thread-confined)
+> - method parameters
+> - constants (`final` fields)
+
+> Volatile is suitable for variables that represent shared states, flags, or single-value updates accessed by multiple
+> threads.
+
 ---
 
-### 331.
+### 437.Does the volatile keyword make a class thread-safe?
 
->
+> No, `volatile` alone **does not make a class thread-safe**.
+> It only guarantees **visibility**, not **atomicity**.  
+> Operations like increment (`count++`) or compound updates remain unsafe even if the variable is volatile.
+> For full thread-safety, use synchronization, locks, or atomic classes from `java.util.concurrent.atomic`.
+
 ---
 
-### 332.
+### 438. What are the advantages and disadvantages of the volatile keyword?
 
->
+> **Advantages:**
+> - Guarantees immediate visibility across threads.
+> - Cheaper than full synchronization for simple reads/writes.
+> - Prevents instruction reordering by the JVM or CPU.
+
+> **Disadvantages:**
+> - Does **not** ensure atomicity for compound operations.
+> - Can cause performance penalties under high contention.
+> - Overuse leads to fragile concurrency designs — suitable only for simple shared state (e.g., stop flags).
+
 ---
 
-### 333.
+### 439.What are virtual threads in Java, and how do they differ from traditional platform threads?
 
->
+> Virtual threads are lightweight, user-mode threads managed by the JVM rather than the operating system.  
+> They are introduced to handle massive concurrency without the overhead of OS thread management.
+> Traditional platform threads are directly mapped to OS threads — each consuming large memory stacks and kernel
+> scheduling resources.  
+> Virtual threads, in contrast, are multiplexed over a small pool of carrier (platform) threads, making them highly
+> scalable.
+
+> Under the hood, virtual threads use **continuations** to suspend and resume execution efficiently.  
+> When a virtual thread performs a blocking operation, it yields its carrier thread, allowing the JVM to schedule
+> another virtual thread.
+
 ---
 
-### 334.
+### 440.How do virtual threads improve the performance and scalability of concurrent applications in Java?
 
->
+> Virtual threads improve scalability by eliminating the one-to-one mapping between Java threads and OS threads.  
+> They drastically reduce memory usage and scheduling overhead, allowing applications to run thousands or even millions
+> of concurrent tasks.
+> The JVM parks virtual threads during blocking I/O and reuses carrier threads, preventing idle blocking and maximizing
+> CPU utilization.  
+> This leads to non-blocking scalability with traditional blocking-style code.
+
+> The underlying implementation integrates with the JDK’s I/O stack (e.g., `SocketChannel`, `FileChannel`), replacing
+> kernel-level blocking with continuation suspension.  
+> This model achieves the same performance benefits as asynchronous frameworks like Netty, but with simpler, imperative
+> code.
+
 ---
 
-### 335.
+### 441.What is the role of Project Loom in introducing virtual threads to Java?
 
->
+> Project Loom is the OpenJDK initiative responsible for rethinking Java concurrency by introducing lightweight,
+> structured concurrency primitives — primarily **virtual threads** and **continuations**.
+> Its goal is to simplify concurrent programming by allowing developers to write synchronous, blocking-style code that
+> scales like asynchronous code.  
+> Loom integrates deeply into the JVM, adding a scheduler that manages millions of virtual threads efficiently.
+
+> The project redefines the concurrency model by providing:
+> - Virtual threads (lightweight concurrency)
+> - Structured concurrency (scoped lifecycle control)
+> - Continuations (mechanism to suspend/resume stack frames)
+
+> Project Loom transforms Java’s concurrency paradigm, offering both performance and clarity without changing existing
+> APIs.
+
 ---
 
-### 336.
+### 442.How do you create and use virtual threads in Java using the Thread API or Executors?
 
->
+> Virtual threads can be created using the same `Thread` API, preserving backward compatibility with existing code.
+> Using Thread API:
+> ```java
+> Thread.ofVirtual().start(() -> doWork());
+> ```
+
+> Using ExecutorService:
+> ```java
+> try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+>     executor.submit(() -> handleRequest());
+> }
+> ```
+
+> Each task runs in an isolated virtual thread, automatically managed by the JVM.  
+> The executor ensures clean lifecycle management, making it ideal for short-lived, high-volume concurrent workloads.
+> This unified model allows existing APIs and frameworks to leverage virtual threads transparently, with no need for
+> callback-based asynchronous designs.
+
 ---
 
-### 337.
+### 443. What are the key benefits of using virtual threads for I/O-bound versus CPU-bound tasks?
 
->
+> Virtual threads are highly beneficial for **I/O-bound** workloads but offer limited advantage for **CPU-bound** ones.
+> For I/O-bound tasks, virtual threads release carrier threads during blocking operations, allowing massive concurrency
+> with minimal memory and scheduling cost.  
+> This makes them ideal for servers handling large numbers of concurrent connections (e.g., HTTP servers,
+> microservices).
+
+> For CPU-bound tasks, performance remains limited by the number of available cores.  
+> Virtual threads still work but provide no significant gain since execution time is dominated by computation, not
+> blocking.
+> The JVM schedules virtual threads cooperatively — not preemptively — meaning CPU-heavy virtual threads can still
+> saturate cores.
+
 ---
 
-### 338.
+### 444.How does the Java Virtual Machine (JVM) manage virtual threads under the hood?
 
->
+> The JVM manages virtual threads as **user-mode fibers** scheduled atop
+> a limited pool of **carrier (platform) threads**.  
+> Each virtual thread has its own call stack but isn’t tied permanently to an OS thread.
+> When a virtual thread encounters a blocking operation (e.g., I/O, sleep, monitor enter), it is **unmounted** from the
+> carrier thread, suspending its stack via **continuations**.  
+> The carrier thread is then freed to execute another runnable virtual thread.
+
+> Upon completion of the blocking operation, the virtual thread is **remounted** onto any available carrier thread and
+> resumes execution transparently.  
+> The scheduling, parking, and resumption are fully managed by the JVM’s internal **ForkJoin-based scheduler**,
+> optimized for throughput.
+
+> This mechanism allows millions of concurrent virtual threads while maintaining low memory usage and cooperative
+> scheduling behavior, offering OS-thread-level performance at user-thread granularity.
+
 ---
 
-### 339.
+### 445.What are the limitations or potential drawbacks of using virtual threads in Java?
 
->
+> While powerful, virtual threads come with several **technical and architectural limitations** that developers must
+> consider.
+
+> - **CPU-bound workloads** gain little benefit since virtual threads don’t increase parallelism beyond available cores.
+> - **Pinned threads** (caused by native or synchronized blocking) prevent carrier thread reuse, reducing scalability.
+> - **JNI or legacy libraries** performing native blocking I/O can degrade performance.
+> - **Thread-local storage** in millions of virtual threads can consume substantial memory.
+> - **Debugging and profiling tools** not updated for Loom may misrepresent thread states or stack traces.
+
 ---
 
-### 340.
+### 446.How do virtual threads interact with existing Java concurrency utilities like ExecutorService or ForkJoinPool?
 
->
+> Virtual threads are fully compatible with existing concurrency APIs, maintaining backward compatibility.
+> The `Executors.newVirtualThreadPerTaskExecutor()` provides a seamless integration point for managing virtual threads —
+> each task gets its own virtual thread, managed efficiently by the JVM.
+> Virtual threads **don’t rely on `ForkJoinPool` for scheduling**, unlike parallel streams or `CompletableFuture`, which
+> use a shared pool.  
+> Instead, they are scheduled by an internal **Loom scheduler** built atop a lightweight carrier pool, independent of
+> user-managed executors.
+> Existing frameworks that use `ExecutorService`, `Future`, or `CompletableFuture` can transparently adopt virtual
+> threads, retaining the same APIs but with dramatically improved scalability for blocking operations.
+
 ---
 
-### 341.
+### 447.What are pinned threads in the context of virtual threads, and how can they impact performance?
 
->
+> A **pinned thread** occurs when a virtual thread cannot release its carrier thread due to a blocking condition that
+> prevents suspension.  
+> This typically happens when executing inside a **synchronized block or native method** that holds a monitor.
+> Because synchronized sections are not continuation-safe, the JVM must **keep the carrier thread occupied** until the
+> lock is released.  
+> This prevents other virtual threads from being scheduled on that carrier, effectively turning the virtual thread into
+> a platform thread temporarily.
+
+> Frequent pinning reduces scalability by increasing carrier thread usage, undermining the benefits of virtual
+> threading.  
+> To avoid this, developers should:
+> - Use **`ReentrantLock`** instead of `synchronized` for long-blocking sections.
+> - Minimize **JNI/native calls** that perform blocking I/O.
+> - Avoid holding locks during blocking operations.
+
 ---
 
-### 342.
+### 448.How do virtual threads handle synchronization and blocking operations compared to platform threads?
 
->
+> Virtual threads treat **blocking operations as suspension points**, allowing cooperative scheduling without wasting OS
+> resources.  
+> Platform threads, by contrast, block the underlying kernel thread, tying up system resources.
+> When a virtual thread performs a blocking I/O or sleep, the JVM **parks** it by saving its stack and freeing the
+> carrier thread.  
+> On completion, the thread is resumed seamlessly from where it left off.
+> Synchronization primitives behave differently:
+> - `synchronized` locks can cause **pinning**, blocking carrier reuse.
+> - `ReentrantLock`, `Semaphore`, and other `java.util.concurrent` primitives are **Loom-aware**, enabling proper
+    suspension.
+
+> At the JVM level, virtual threads implement **continuation-based stack management**, integrating with structured
+> concurrency and the Loom scheduler.
+
 ---
 
-### 343.
+### 449.What is a deadlock? Give an example.
 
->
+> A **deadlock** occurs when two or more threads are permanently blocked, each waiting for a resource locked by the
+> other.  
+> This mutual waiting creates a circular dependency where no thread can proceed.
+> Deadlocks typically happen when multiple threads acquire multiple locks in an inconsistent order.  
+> For example, Thread A locks `Resource1` and waits for `Resource2`, while Thread B locks `Resource2` and waits for
+`Resource1`.
+
+> In JVM terms, deadlocks are detected when threads hold monitors in a circular wait pattern.  
+> They can be observed via tools like `jconsole`, `jvisualvm`, or thread dumps where “Found one Java-level deadlock”
+> appears.
+
 ---
 
-### 344.
+### 450.How can we prevent a thread from entering a deadlock state?
 
->
+> Deadlock prevention focuses on eliminating at least one of the four Coffman conditions:  
+> (1) mutual exclusion, (2) hold-and-wait, (3) no preemption, and (4) circular wait.
+
+> **Practical strategies:**
+> - **Consistent lock ordering:** Always acquire locks in a global, predefined order.
+> - **Try-lock mechanisms:** Use `tryLock()` with timeout to avoid indefinite waiting.
+> - **Lock hierarchy or partitioning:** Limit the scope of each lock to reduce interdependence.
+> - **Timeout-based coordination:** Force threads to back off and retry after a failed lock attempt.
+> - **Use high-level concurrency APIs:** `java.util.concurrent` abstractions (e.g., `Semaphore`, `ReentrantLock`,
+    `ConcurrentHashMap`) reduce manual synchronization needs.
+
 ---
 
-### 345.
+### 451.What is the difference between livelock and deadlock?
 
->
+> Both **livelock** and **deadlock** are concurrency pathologies, but their behavior differs fundamentally.
+> - In a **deadlock**, threads are **stuck indefinitely**, waiting for each other — *no progress occurs*.
+> - In a **livelock**, threads are **active but not progressing**, repeatedly changing states in response to each
+    other — *continuous motion without advancement*.
+
+> For example, two threads constantly yielding or retrying lock acquisition can enter livelock — they keep running but
+> make no forward progress.
+
+> At the system level, deadlock represents **permanent blocking**, while livelock represents **resource starvation due
+to over-coordination**.  
+> Both can be mitigated using randomized backoff, better lock ordering, or concurrent algorithms that decouple
+> contention handling.
 ---
 
-### 346.
+### 452.What are Atomics?
 
->
+> Atomics are classes in the `java.util.concurrent.atomic` package that provide **lock-free, thread-safe** operations on
+> single variables.  
+> They enable safe concurrent updates without using synchronized blocks or explicit locks.
+> Each atomic class (e.g., `AtomicInteger`, `AtomicLong`, `AtomicReference`) encapsulates a variable whose reads and
+> writes are performed atomically through low-level CPU instructions.
+> Under the hood, they rely on hardware-level atomic primitives like **Compare-And-Swap (CAS)** to ensure safe
+> concurrent updates without blocking other threads.
+
 ---
 
-### 347.
+### 453.Why do we need to use Atomic classes?
 
->
+> Atomic classes are required when multiple threads update shared variables concurrently without needing full
+> synchronization.  
+> They provide **non-blocking** alternatives to `synchronized`, improving performance under contention.
+> For example, incrementing a shared counter or updating a reference atomically can be done using
+`AtomicInteger.incrementAndGet()` instead of synchronizing on an object.
+> They are ideal for high-throughput, low-latency systems where locks cause contention or scalability issues.
+
 ---
 
-### 348.
+### 454.How does an atomic operation work?
 
->
+> An atomic operation executes **indivisibly** — once started, it either completes fully or not at all, without
+> interference from other threads.
+> The JVM delegates these atomic actions to CPU-level instructions such as `LOCK CMPXCHG` (on x86), ensuring atomicity
+> directly in hardware.  
+> These operations are visible to all threads due to memory barriers, guaranteeing proper happens-before semantics.
+> Thus, even under heavy concurrency, atomic operations maintain data consistency without requiring locks.
+
 ---
 
-### 349.
+### 455.What is CAS (Compare-And-Swap)? Explain how CAS works.
 
->
+> **CAS (Compare-And-Swap)** is a low-level atomic instruction that updates a variable **only if** it has not been
+> modified by another thread since it was last read.
+
+> It takes three operands:
+> - **Memory location (V)** — the variable to update.
+> - **Expected value (A)** — the value you think is currently in V.
+> - **New value (B)** — the value to set if the current value equals A.
+
+> CAS ensures atomic updates without locking. If contention occurs, failed threads simply retry until success.
+> The JVM uses CAS in classes like `AtomicInteger`, `ConcurrentLinkedQueue`, and `ConcurrentHashMap` to implement
+> non-blocking concurrency.
+
 ---
 
-### 350.
+### 456.Can Atomic classes make a class thread-safe without blocking threads?
 
->
+> Yes, atomic classes enable **non-blocking thread safety** by ensuring variable updates occur atomically using CAS.  
+> This avoids explicit locks, allowing other threads to continue execution without waiting.
+
+> However, thread safety is guaranteed **only for individual variables or operations**.  
+> If multiple dependent updates are needed, higher-level synchronization or `VarHandle` coordination may still be
+> required.
+
+> Therefore, Atomics are ideal for fine-grained concurrency but not sufficient for complex, multi-variable consistency
+> requirements.
+
 ---
 
-### 351.
+### 457. What are the advantages of using Atomic classes?
 
->
+> - **Lock-free concurrency:** Eliminates lock contention and context switching.
+> - **High scalability:** Performs better under high thread counts.
+> - **Low latency:** No blocking, leading to faster throughput in real-time systems.
+> - **Hardware-backed atomicity:** Uses efficient CPU instructions.
+> - **Memory visibility guarantees:** Ensures consistent reads/writes across threads.
+
 ---
 
-### 352.
+### 458.In how many ways can we make a class thread-safe in Java?
 
->
+> A class can be made thread-safe through multiple approaches depending on granularity, performance, and use case.
+> Modern Java prefers **immutability**, **atomic types**, or **concurrent utilities** over coarse synchronization due to
+> scalability and performance benefits.
+
+> **Main techniques:**
+> - **Synchronization:** Use `synchronized` methods or blocks to serialize access.
+> - **Volatile variables:** Ensure visibility of changes across threads for single-variable state.
+> - **Locking mechanisms:** Use `ReentrantLock`, `ReadWriteLock`, or `StampedLock` for fine-grained control.
+> - **Atomic variables:** Use `AtomicInteger`, `AtomicReference`, etc., for lock-free operations.
+> - **Thread confinement:** Limit object access to a single thread (no sharing).
+> - **Immutable objects:** Design objects whose state never changes after construction.
+> - **Concurrent collections:** Use thread-safe structures like `ConcurrentHashMap`, `CopyOnWriteArrayList`, etc.
+
 ---
 
-### 353.
+### 459.How many thread-safe collections are there in Java?
 
->
+> Java provides several built-in thread-safe collections divided into two main categories:
+
+> **1. Legacy synchronized collections (blocking):**
+> - `Vector`
+> - `Stack`
+> - `Hashtable`
+> - `Collections.synchronizedList()`, `synchronizedMap()`, etc.
+
+> **2. Modern concurrent collections (non-blocking or fine-grained locking):**
+> - `ConcurrentHashMap`
+> - `ConcurrentLinkedQueue`
+> - `ConcurrentLinkedDeque`
+> - `CopyOnWriteArrayList`
+> - `CopyOnWriteArraySet`
+> - `LinkedBlockingQueue`, `ArrayBlockingQueue`, `PriorityBlockingQueue`
+> - `ConcurrentSkipListMap`, `ConcurrentSkipListSet`
+
+> These classes use different synchronization strategies (locks, CAS, or copy-on-write) to balance thread safety and
+> performance.
+
 ---
 
-### 354.
+### 460. What is ConcurrentHashMap?
 
->
+> `ConcurrentHashMap` is a high-performance, thread-safe `Map` implementation that allows concurrent reads and
+> controlled concurrent writes.
+> It avoids global synchronization by using **fine-grained locking** or **lock-free (CAS)** updates on internal
+> buckets.  
+> Multiple threads can read and write simultaneously without blocking each other, as long as they operate on different
+> segments or nodes.
+
+> Since Java 8, `ConcurrentHashMap` uses a **lock-free, tree-based structure** to prevent contention and improve
+> worst-case performance.  
+> It ensures thread safety while maintaining near-constant-time operations for `get()`, `put()`, and `remove()` under
+> heavy concurrency.
+
 ---
 
-### 355.
+### 461.Can we make an ArrayList thread-safe?
 
->
+> Yes, there are multiple ways to make an `ArrayList` thread-safe depending on concurrency needs.
+
+> **Options:**
+> - `Collections.synchronizedList(new ArrayList<>())` — wraps an ArrayList with synchronized accessors.
+> - `CopyOnWriteArrayList` — a thread-safe variant optimized for read-heavy workloads.
+> - Custom synchronization using locks or concurrent wrappers.
+
+> `synchronizedList` serializes all operations, suitable for low concurrency levels,  
+> while `CopyOnWriteArrayList` provides lock-free reads by copying the array on every modification.
+> For high-read, low-write scenarios, `CopyOnWriteArrayList` is the preferred modern approach.  
+> For heavy-write scenarios, consider concurrent data structures like `ConcurrentLinkedQueue` or partitioned collections
+> for better scalability.
 ---
 
-### 356.
+### 462.What is an immutable class?
 
->
+> An **immutable class** is a class whose state cannot be modified after creation.  
+> Once an object is constructed, all its fields remain constant throughout its lifetime.
+
+> Immutable classes provide **referential stability** — any method call or external reference cannot alter their
+> internal data.  
+> This property makes them inherently thread-safe and ideal for concurrent and functional programming.
+
 ---
 
-### 357.
+### 463.If yes, how can we create it?
 
->
+> To create an immutable class, follow these principles:
+> - Declare the class as `final` to prevent subclassing.
+> - Declare all fields as `private` and `final`.
+> - Initialize all fields in the constructor.
+> - Do not provide setters or any mutating methods.
+> - Ensure deep immutability by returning defensive copies of mutable fields (e.g., `Date`, collections).
+
+> This ensures that no external code can change the internal state after initialization, maintaining a stable object
+> identity.
+
 ---
 
-### 358.
+### 464.List the immutable classes available in Java.
 
->
+> Common immutable classes in the Java standard library include:
+> - `String`
+> - All wrapper classes (`Integer`, `Long`, `Double`, `Boolean`, etc.)
+> - `BigInteger`
+> - `BigDecimal`
+> - `LocalDate`, `LocalTime`, `LocalDateTime`, `Instant` (from `java.time`)
+> - `UUID`
+> - `Path` (from `java.nio.file`)
+
 ---
 
-### 359.
+### 465.Are immutable classes thread-safe?
 
->
+> Yes, all immutable classes are inherently **thread-safe**.  
+> Since their internal state cannot change, concurrent access does not lead to data races or visibility issues.
+
 ---
 
-### 360.
+### 466.If they are thread-safe, why?
 
->
+> Immutability guarantees that once an object is fully constructed and published, no thread can modify its state.  
+> This eliminates synchronization requirements entirely.
+> JVM memory model ensures that final fields are safely published after object construction, so all threads observe a
+> consistent state.  
+> As a result, immutable objects can be freely shared among threads without synchronization, caching, or defensive
+> copying — providing both **safety** and **performance**.
 ---
 
-### 361.
+### 467.What are Thread Pools?
 
->
+> **Thread pools** are managed collections of reusable threads that execute multiple tasks concurrently without
+> repeatedly creating and destroying threads.  
+> They improve performance by reusing existing threads and controlling concurrency levels in large-scale applications.
+> Instead of spawning new threads for each task, thread pools maintain a fixed or dynamic number of worker threads that
+> fetch tasks from an internal queue.
+
 ---
 
-### 362.
+### 468. What kind of framework is the Executor Framework?
 
->
+> The **Executor Framework** is a high-level concurrency framework introduced in Java 5 that abstracts and manages
+> thread creation, scheduling, and execution.  
+> It belongs to the `java.util.concurrent` package and provides structured control over asynchronous task execution.
+> It decouples **task submission** from **thread management**, allowing developers to focus on logic instead of
+> low-level concurrency mechanics.
+
 ---
 
-### 363.
+### 469.For what purpose was the Executor Framework introduced in Java 5?
 
->
+> The Executor Framework was introduced to address inefficiencies and complexity in manual thread handling.  
+> Prior to Java 5, developers explicitly created and managed threads — leading to unbounded thread creation, resource
+> leaks, and poor scalability.
+> The framework provides:
+> - Centralized control of thread reuse and lifecycle
+> - Efficient scheduling and queuing of tasks
+> - Simplified concurrency model using standard interfaces (`Executor`, `ExecutorService`, `ScheduledExecutorService`)
+
+
 ---
 
-### 364.
+### 470.Explain how Executors work.
 
->
+> Executors decouple **task submission** from **task execution**.  
+> Developers submit tasks (`Runnable` or `Callable`) to an `ExecutorService`, which schedules them for execution on
+> worker threads.
+> Internally, an executor maintains:
+> - A **thread pool** (fixed, cached, or scheduled)
+> - A **task queue** (`BlockingQueue`) to hold pending tasks
+> - A **worker management policy** for scaling and termination
+
+> Example flow:
+> 1. Task submitted → added to queue
+> 2. Idle thread picks up the task → executes
+> 3. On completion → thread returns to pool for reuse
 ---
 
-### 365.
+### 471.What are the advantages of the Executor Framework?
 
->
+> - **Thread reuse:** Avoids the cost of frequent thread creation/destruction.
+> - **Task-based model:** Simplifies concurrent programming by abstracting thread details.
+> - **Scalability:** Adjusts thread count based on workload and system resources.
+> - **Centralized control:** Unified API for scheduling, managing, and terminating tasks.
+> - **Safe shutdown:** Graceful resource cleanup and termination support.
+> - **Integration:** Works seamlessly with futures, async tasks, and modern concurrency utilities.
+
+---
+
+### 472. How many types of Executors exist in Java?
+
+> Java provides several preconfigured executor types via the `Executors` factory class:
+
+> - **FixedThreadPool:** Constant number of threads; excess tasks queued.
+> - **CachedThreadPool:** Creates new threads as needed; reuses idle ones.
+> - **SingleThreadExecutor:** Single worker thread; executes tasks sequentially.
+> - **ScheduledThreadPool:** Supports delayed and periodic task execution.
+> - **WorkStealingPool:** (Java 8+) Parallel pool that uses ForkJoinPool for load balancing.
+
+---
+
+### 473.Where does an Executor store its tasks?
+
+> Executors internally use a **`BlockingQueue`** to store pending tasks before execution.  
+> Common implementations include:
+> - `LinkedBlockingQueue` for unbounded task queues
+> - `SynchronousQueue` for direct handoff between producer and worker
+> - `ArrayBlockingQueue` for bounded queues with capacity limits
+
+---
+
+### 474.In how many ways can we shut down Executors?
+
+Executors can be shut down in **two primary ways**:
+
+- **`shutdown()`** — Initiates a graceful shutdown; no new tasks accepted, existing tasks complete normally.
+- **`shutdownNow()`** — Forces immediate termination; attempts to cancel running tasks and clears the queue.
+
+Additionally, lifecycle management can involve:
+
+- **`awaitTermination(timeout, unit)`** — Waits for active tasks to finish within a time limit.
+- **`isShutdown()` / `isTerminated()`** — Status checks for executor state.
+
+---
+
+### 475.What is Callable?
+
+> **Callable** is a functional interface in Java used to represent a task that returns a result and may throw a checked
+> exception.  
+> It is found in the `java.util.concurrent` package and is similar to `Runnable`, but more powerful because it can
+> return a value.
+
+---
+
+### 476.What is Future?
+
+> **Future** is an interface that represents the result of an asynchronous computation.  
+> It provides methods to check if a task is finished, wait for it to complete, and get the result when available.
+
+---
+
+### 477. What is the difference between Callable and Runnable?
+
+| Feature          | Callable                         | Runnable                            |
+|------------------|----------------------------------|-------------------------------------|
+| Return value     | Returns a result                 | Returns nothing (`void`)            |
+| Exceptions       | Can throw checked exceptions     | Cannot throw checked exceptions     |
+| Interface method | `call()`                         | `run()`                             |
+| Use case         | When a task needs to return data | When a task just performs an action |
+
+> Example:
+> - Use **Runnable** for background tasks like logging.
+> - Use **Callable** when you need a computed result, like reading data from a file.
+
+---
+
+### 478.What is FutureTask?
+
+> **FutureTask** is a class that implements both **Runnable** and **Future** interfaces.  
+> It acts as a bridge — you can run it like a thread and also get the result later.
+
+---
+
+### 479.Why is the isDone() method of the Future interface used?
+
+> The **`isDone()`** method checks whether the task has finished — either successfully, with an error, or by
+> cancellation.  
+> It helps avoid blocking the current thread unnecessarily.
+
+---
+
+### 480. Why is the get() method of the Future interface used?
+
+> The **`get()`** method retrieves the result of the task once it is complete.  
+> If the task is still running, it makes the current thread **wait** until the result is ready.
+
+---
+
+### 481.What is ThreadLocal?
+
+> **ThreadLocal** is a special class in Java that provides **thread-local variables** —  
+> each thread has its **own independent copy** of the variable, not shared with other threads.
+> It helps avoid shared state problems without using synchronization.
+
+---
+
+### 482.What is ThreadLocalRandom?
+
+> **ThreadLocalRandom** is a random number generator designed for **multi-threaded applications**.  
+> It provides better performance than `java.util.Random` by avoiding shared state and locking between threads.
+
+---
+
+### 483.In which situations should we use ThreadLocal?
+
+> Use **ThreadLocal** when each thread needs its **own isolated instance** of a variable —  
+> especially for objects that are **not thread-safe** but **expensive to create**.
+> Common examples:
+> - Storing per-thread user sessions in web servers
+> - Reusing `SimpleDateFormat` safely across threads
+> - Managing per-thread database connections or transactions
+
+---
+
+### 484.Why do we use the withInitial() static method of ThreadLocal?
+
+> The **`withInitial()`** static method sets a **default initial value** for each thread’s variable when it is first
+> accessed.  
+> It simplifies initialization and avoids `null` checks.
+> Example:
+> ```java
+> ThreadLocal<String> name = ThreadLocal.withInitial(() -> "Guest");
+> System.out.println(name.get()); // prints "Guest"
+> ```
+
+---
+
+### 485. What are Scoped Values in Java, and how do they relate to ThreadLocal?
+
+> **Scoped Values** (introduced in Java 21) are immutable, context-bound values that can be shared **safely across call
+stacks** within a defined scope.
+> They are similar in purpose to `ThreadLocal`, but instead of storing mutable data per thread, they store **temporary,
+read-only context data** for a specific code region.
+> Scoped Values are designed as a modern, safer alternative to `ThreadLocal`, especially when using **virtual threads**.
+
+---
+
+### 486. What are the key differences between Scoped Values and ThreadLocal in terms of mutability and lifetime?
+
+**Mutability:**
+
+- `ThreadLocal`: stores **mutable, per-thread state** — each thread can modify its own copy.
+- `ScopedValue`: stores **immutable, read-only state** — once bound, it cannot be changed inside the scope.
+
+**Lifetime:**
+
+- `ThreadLocal`: lives as long as the thread exists (may cause memory leaks in long-lived threads).
+- `ScopedValue`: exists only within a **defined lexical scope** and is **automatically unbound** when that scope exits.
+
+---
+
+### 487.How do Scoped Values improve upon ThreadLocal when using virtual threads in Java?
+
+> **Scoped Values** integrate seamlessly with **virtual threads** because they:
+> - Avoid long-lived state that might outlive short-lived virtual threads.
+> - Are **cheap to create and destroy**, matching the lightweight nature of virtual threads.
+> - Prevent accidental data leakage between reused carrier threads (a major problem with `ThreadLocal`).
+
+> In virtual-thread environments, Scoped Values ensure **context isolation**, memory efficiency, and safe context
+> propagation without thread affinity.
+
+---
+
+### 488.In what scenarios should developers prefer Scoped Values over ThreadLocal?
+
+Use **Scoped Values** when:
+
+- The data is **immutable** and only needed **within a specific call scope**.
+- You need **safe context passing** (e.g., request IDs, security tokens, locale, or tracing info).
+- You’re working with **virtual threads**, where `ThreadLocal` can cause memory leaks or unwanted state sharing.
+
+Keep using **ThreadLocal** when:
+
+- You need **mutable, per-thread state** that persists for the thread’s entire lifetime.
+- You’re working with legacy APIs not compatible with `ScopedValue`.
+
+**Best practice:**
+
+- Use `ScopedValue` for modern, structured, short-lived context passing;
+- use `ThreadLocal` only for legacy or long-lived thread-bound state.
+
+---
+
+### 489.What is Date?
+
+> `Date` is a Java class from `java.util` used to represent a specific point in time (milliseconds since January 1,
+> 1970, UTC).
+> It provides basic time manipulation and formatting capabilities but lacks modern time-zone and immutability features.
+
+---
+
+### 490.What is Calendar?
+
+> `Calendar` is an abstract class that provides methods to manipulate dates and times, such as adding or subtracting
+> days, months, or years.
+> It was introduced to overcome some of the limitations of `Date` by providing field-based operations and
+> locale-sensitive calculations.
+
+---
+
+### 491.Why do we use the Date and Calendar classes?
+
+> They were historically used for:
+> - Representing timestamps (`Date`)
+> - Performing date/time calculations (`Calendar`)
+> - Formatting and parsing date-time strings (with `SimpleDateFormat`)
+
+---
+
+### 492. What are the drawbacks of the Date class?
+
+- **Mutable**, which makes it unsafe in multi-threaded contexts.
+- **Poor API design** — confusing methods like `getYear()` and `getMonth()` (deprecated).
+- **Time-zone handling** is weak and often error-prone.
+- Represents time as milliseconds only, without clear separation of date/time fields.
+
+---
+
+### 493.What are the drawbacks of the Calendar class?
+
+- Also **mutable** and not thread-safe.
+- Complex and verbose API — requires many steps for simple operations.
+- **Ambiguous behavior** with different locales and time zones.
+- **Performance overhead** compared to newer APIs.
+- Hard to debug due to internal field-based computations.
+
+---
+
+### 494. What is the Time API?
+
+> The **Time API** (`java.time`) is a modern date and time framework introduced in Java 8 to replace the old `Date` and
+`Calendar` classes.
+> It provides a clear, immutable, and thread-safe approach to handling dates, times, time zones, and durations.
+
+---
+
+### 495. Why was the Time API introduced in Java 8?
+
+> The old `Date` and `Calendar` APIs were **mutable, inconsistent, and hard to use**.  
+> The new **Time API** was introduced to offer:
+> - Immutability and thread safety
+> - Better time-zone management
+> - Fluent and expressive API design
+> - Strong separation of concepts like `Instant`, `LocalDate`, and `ZonedDateTime`
+
+---
+
+### 496. What is Duration?
+
+> `Duration` represents an **amount of time** measured in seconds and nanoseconds between two instants on the time-line.
+> Used mainly for time-based intervals (e.g., “5 minutes 30 seconds”).
+
+---
+
+### 497. What is Period?
+
+> `Period` represents a **date-based amount of time** measured in years, months, and days.
+> Used for human-readable date intervals (e.g., “2 years and 3 months”).
+---
+
+### 498.What is the difference between Date and LocalDate?
+
+- `Date` represents a **specific point in time** (timestamp).
+- `LocalDate` represents only a **calendar date** (year, month, day) **without time or time zone**.
+- `Date` is mutable and not time-zone aware; `LocalDate` is immutable and type-safe.
+
+---
+
+### 499.What is the difference between Date and ZonedDateTime?
+
+- `Date`: represents an **instant in UTC**, without time-zone information.
+- `ZonedDateTime`: represents a **date-time with a specific time zone** (e.g., `Europe/Tashkent`).
+- `ZonedDateTime` is more expressive and precise for global applications requiring regional time handling.
+
+---
+
+### 500.What is the difference between Time and LocalTime?
+
+- `Time` (from `java.sql.Time`) is a legacy class representing time for databases, dependent on `Date`.
+- `LocalTime` represents a **pure time value** (hour, minute, second, nanosecond) without a date or time zone.
+- `LocalTime` is immutable, thread-safe, and preferred for modern applications.
+
+---
+
+### 501. How does the Date class handle time zones, and why is it considered limited for global applications?
+
+> The `Date` class internally stores time as **UTC milliseconds since the epoch (1970-01-01T00:00:00Z)** but displays it
+> using the **system’s default time zone**.
+> This implicit behavior causes confusion and inconsistencies when working with global users or systems across multiple
+> time zones.
+> Its lack of explicit time-zone awareness makes it unreliable for international or distributed applications.
+
+---
+
+### 502.What are the thread-safety issues with SimpleDateFormat, and how can they be mitigated?
+
+> `SimpleDateFormat` is **not thread-safe** because it uses **shared mutable state** (e.g., internal calendar objects
+> and formatting buffers).
+> Concurrent access from multiple threads can cause corrupted output or `ParseException`s.
+> **Mitigation options:**
+
+- Use separate `SimpleDateFormat` instances per thread.
+- Use `ThreadLocal<SimpleDateFormat>` to isolate formatter per thread.
+- Prefer `DateTimeFormatter` (from Java 8’s Time API), which is **immutable and thread-safe**.
+
+---
+
+### 503.Why is the Date class considered mostly deprecated, and what are the recommended alternatives?
+
+> The `Date` API has a poor design — mutable, time-zone unaware, and confusing (e.g., deprecated methods like
+`getYear()`, `getMonth()`).
+> It doesn’t support modern concepts like time zones, offsets, or ISO standards.
+> **Recommended alternatives (Java Time API):**
+
+- `Instant` → for timestamps
+- `LocalDate` → for date without time
+- `LocalDateTime` → for date and time without zone
+- `ZonedDateTime` → for full time-zone support
+
 ---
 
-### 366.
+### 504. How does the Java Time API (JSR-310) improve thread safety compared to Date and Calendar?
 
->
+> The **Time API** (`java.time`) is built on **immutability** — once a date/time object is created, it cannot be
+> changed.
+> This design eliminates shared mutable state and ensures **inherent thread safety**.
+> Each operation creates a new instance, allowing safe use across multiple threads without synchronization.
+
 ---
 
-### 367.
+### 505. What is the role of ZoneId and ZoneOffset in handling time zones with the Time API?
 
->
+> - `ZoneId` identifies a **geographical time zone** (e.g., `Europe/London`, `Asia/Tashkent`).
+> - `ZoneOffset` represents a **fixed offset from UTC** (e.g., `+05:00`).
+
 ---
 
-### 368.
+### 506.How can you use Instant to represent a point in time, and how does it differ from LocalDateTime?
 
->
+> `Instant` represents an exact **moment on the global timeline** in UTC (e.g., `2025-11-01T14:30:00Z`).  
+> `LocalDateTime` represents a **human-readable date-time** without zone or offset (e.g., `2025-11-01T19:30:00`).
+
 ---
 
-### 369.
+### 507. What are the benefits of using DateTimeFormatter over SimpleDateFormat for formatting dates and times?
 
->
+> - **Immutable and thread-safe**, unlike `SimpleDateFormat`.
+> - **Supports predefined ISO and localized patterns**.
+> - **Fluent API** for parsing and formatting.
+> - **Better error handling** — throws `DateTimeParseException` instead of silent failure.
+> - **Works seamlessly** with `LocalDate`, `LocalTime`, and `ZonedDateTime`.
+
 ---
 
-### 370.
+### 508. What is an Input/Output Stream?
 
->
+> An **Input/Output Stream** in Java is a data pipeline that reads or writes bytes sequentially between a Java program
+> and an external data source or destination (e.g., file, socket, or memory).
+> `InputStream` is used for reading bytes, and `OutputStream` is used for writing bytes.
+> Streams abstract low-level data transfer, allowing consistent APIs for different I/O sources.
+
 ---
 
-### 371.
+### 509. What is the File class?
 
->
+> The `File` class in `java.io` represents **file and directory paths** in the filesystem, not the actual file content.
+> It provides methods to **create, delete, rename, or query** files and directories (e.g., existence, size,
+> permissions).
+> It acts as a filesystem handle, not a data container.
+
 ---
 
-### 372.
+### 510. Explain the FileInputStream and FileOutputStream classes.
 
->
+> `FileInputStream` reads raw **bytes** from a file, while `FileOutputStream` writes raw **bytes** to a file.
+> They are suitable for binary data (e.g., images, audio, serialized objects) rather than text.
+> Both operate at the byte level and should often be wrapped with buffered or data streams for better efficiency and
+> usability.
+
 ---
 
-### 373.
+### 511.Explain the DataInputStream and DataOutputStream classes.
 
->
+> `DataInputStream` and `DataOutputStream` allow reading and writing **Java primitive data types** (int, float, boolean,
+> etc.) in a portable binary format.
+> They wrap around raw streams like `FileInputStream` or `FileOutputStream` to provide higher-level read/write methods (
+> e.g., `readInt()`, `writeDouble()`).
+> Useful for structured binary communication between Java programs.
+
 ---
 
-### 374.
+### 512. Why are the FileReader and FileWriter classes used?
 
->
+> `FileReader` and `FileWriter` are **character-based streams** for reading and writing text files.
+> They convert raw bytes to characters using the platform’s default encoding (or specified charset).
+> Best suited for text content (not binary data).
 ---
 
-### 375.
+### 513. Why are the BufferedReader and BufferedWriter classes used?
 
->
+> `BufferedReader` and `BufferedWriter` wrap around `Reader` and `Writer` classes to **improve performance** by reducing
+> the number of I/O operations.
+> They use an internal buffer to read/write larger chunks of data at once, minimizing disk or network access.
+> `BufferedReader` also provides convenient methods like `readLine()` for reading text line-by-line.
+
 ---
 
-### 376.
+### 514. What is the difference between File(Reader/Writer) and Buffered(Reader/Writer)?
 
->
+- **FileReader/FileWriter**: read and write characters **directly** from/to the file, performing one I/O operation per
+  character or small group.
+- **BufferedReader/BufferedWriter**: use an internal **buffer** to read/write multiple characters at once, improving
+  efficiency.
+- Buffered classes are **faster**, **reduce disk access**, and provide **additional utility methods** (e.g.,
+  `readLine()`, `newLine()`).
+
 ---
 
-### 377.
+### 515.When would you choose FileInputStream over FileReader, and what problems could arise if you use the wrong one for reading a text file?
 
->
+> `FileInputStream` should be used for **binary data** (e.g., images, PDFs, audio), while `FileReader` is intended for *
+*text data**.
+> If you use `FileInputStream` for reading text, you get **raw bytes** without character decoding, which can corrupt
+> text (especially with multibyte encodings like UTF-8).
+> Conversely, using `FileReader` on binary files leads to **data loss or misinterpretation**, since it attempts to
+> decode bytes as characters.
+
 ---
 
-### 378.
+### 516.Explain how chaining streams works in Java I/O. Provide an example that combines FileInputStream, BufferedInputStream, and DataInputStream—and justify why each layer is needed.
 
->
----
+> **Stream chaining (decorator pattern)** allows combining multiple I/O streams, where each layer adds functionality to
+> the one below.
 
-### 379.
+> Example:
+> ```java
+> try (DataInputStream in =
+>          new DataInputStream(
+>              new BufferedInputStream(
+>                  new FileInputStream("data.bin")))) {
+>     int value = in.readInt();
+> }
+> ```
 
->
+- `FileInputStream`: reads raw bytes from the file.
+- `BufferedInputStream`: adds a buffer to minimize system calls and improve performance.
+- `DataInputStream`: interprets buffered bytes as Java primitives (e.g., `readInt()`, `readDouble()`).
+
 ---
 
-### 380.
+### 517.Why doesn’t BufferedReader have a readChar() method, but it has readLine()? How would you read a single character efficiently using buffered I/O?
 
->
+> `BufferedReader` focuses on **text-oriented operations**, especially line-based reading, which is common for text
+> processing.
+> It already inherits the `read()` method from `Reader` to read a single character, so a dedicated `readChar()` is
+> redundant.
+> The buffering ensures efficient I/O even when reading one character at a time.
+> To read a single character efficiently:
+> ```java
+> try (BufferedReader reader = new BufferedReader(new FileReader("file.txt"))) {
+>     int ch = reader.read(); // reads one character but uses buffer internally
+> }
+> ```
+
 ---
 
-### 381.
+### 518. What happens if you forget to close a FileOutputStream after writing data? How does try-with-resources help prevent such issues?
 
->
+> If a `FileOutputStream` isn’t closed, **buffered data may not be flushed**, leading to
+> **incomplete or corrupted files**.
+> Additionally, the **file descriptor** remains open, potentially causing **resource leaks** and preventing file
+> deletion or modification.
+
 ---
 
-### 382.
+### 519.What is NIO?
 
->
+> **NIO (New I/O)** is a Java API introduced in Java 1.4 that provides a more flexible, scalable, and efficient way to
+> handle I/O operations using **buffers, channels, and selectors**.
+> Unlike traditional stream-based I/O, NIO supports **non-blocking** and **asynchronous** I/O operations for both files
+> and network sockets.
+
 ---
 
-### 383.
+### 520.Why was NIO introduced in Java 7?
 
->
----
+> Java 7 expanded NIO into **NIO.2** (`java.nio.file` package) to modernize file handling and filesystem access.
+> It introduced:
 
-### 384.
+- The `Path`, `Files`, and `FileVisitor` APIs for safer and more powerful file operations.
+- Better **exception handling**, **symbolic link support**, and **atomic operations**.
+- Asynchronous channels (`AsynchronousFileChannel`, `AsynchronousSocketChannel`) for non-blocking I/O.
 
->
 ---
 
-### 385.
+### 521.What is the difference between traditional I/O streams and NIO? How does NIO's Channel and Buffer model differ fundamentally from the stream-based I/O model? Why is this better for high-throughput applications?
 
->
----
+**Traditional I/O (java.io):**
 
-### 386.
+- Based on **streams** (unidirectional flow of bytes/characters).
+- **Blocking model** — a thread waits until an operation completes.
+- Data is processed one byte or char at a time.
 
->
----
+**NIO (java.nio):**
 
-### 387.
+- Based on **Channels and Buffers** — data is read into a `Buffer` and processed directly from memory.
+- Supports **non-blocking I/O**, where a thread can perform other work while waiting for data.
+- Enables **zero-copy** transfers between kernel and user space (via `FileChannel.transferTo()`).
 
->
 ---
 
-### 388.
+### 522.What is non-blocking I/O in NIO, and how does it enable a single thread to manage multiple connections (e.g., in a server)?
 
->
----
+> **Non-blocking I/O** allows a thread to **initiate an operation and continue immediately** without waiting for data to
+> be read or written.
+> This is achieved through **Selectors**, which monitor multiple channels (connections) for readiness events.
+> This enables scalable, event-driven servers like **Netty** or **Java NIO HTTP servers** to handle thousands of
+> concurrent clients efficiently.
+> Example flow:
 
-### 389.
+- A single thread registers many `SocketChannel`s with a `Selector`.
+- The selector notifies when a channel is ready (e.g., `OP_READ`, `OP_WRITE`).
+- The thread processes only ready channels — no thread-per-connection model needed.
 
->
 ---
 
-### 390.
+### 523.Compare FileChannel with FileInputStream. When would you use one over the other? Can you memory-map a file using traditional I/O?
 
->
----
+**FileInputStream:**
 
-### 391.
+- Stream-based, blocking I/O.
+- Simple for sequential reads/writes.
+- No random access or memory mapping.
 
->
----
+**FileChannel:**
 
-### 392.
+- Buffer-based, supports **random access**, **non-blocking I/O**, and **file memory mapping**.
+- Allows **position control**, **region locking**, and **zero-copy transfer** via `transferTo()`/`transferFrom()`.
 
->
+> You cannot memory-map a file using traditional I/O.  
+> Use `FileChannel.map()` to map a file directly into memory for high-performance reads/writes (useful for large files
+> and
+> databases).
+
 ---
 
-### 393.
+### 524. What is the purpose of the Path and Files classes introduced in NIO.2 (Java 7)? Give an example where Files.copy() is safer or simpler than using streams.
 
->
----
+**`Path`** replaces `File` as the modern representation of file system paths.  
+**`Files`** provides **static utility methods** for operations like `copy()`, `move()`, `readAllLines()`, and
+`delete()`.
 
-### 394.
+- Better **error handling** via `IOException`.
+- **Automatic resource management**.
+- **Cross-platform consistency**.
+- Support for **symbolic links** and **atomic operations**.
 
->
 ---
 
-### 395.
+### 525.What is Serialization?
 
->
----
+**Serialization** is the process of converting a Java object into a **byte stream** so that it can be:
 
-### 396.
+- **Stored** (e.g., in a file or database),
+- **Transferred** (e.g., over a network),
+- Or **cached** for later use.
 
->
 ---
 
-### 397.
+### 526. What is Deserialization?
 
->
+> **Deserialization** is the reverse process — converting a byte stream back into a **Java object**.
+
 ---
 
-### 398.
+### 527.What is Externalization?
 
->
+> **Externalization** is a more **customized version of serialization** that gives developers **full control** over how
+> an object’s state is written and read.
+
 ---
 
-### 399.
+### 528.What is the difference between the Externalizable and Serializable interfaces?
 
->
+| Feature                      | `Serializable`                     | `Externalizable`                       |
+|------------------------------|------------------------------------|----------------------------------------|
+| Control                      | Automatic (default Java mechanism) | Manual (custom read/write logic)       |
+| Methods to implement         | None                               | `writeExternal()` and `readExternal()` |
+| Performance                  | Slower (reflection-based)          | Faster (custom and explicit)           |
+| Flexibility                  | Limited                            | Full control over serialization format |
+| Default constructor required | Not mandatory                      | Mandatory (public no-arg constructor)  |
+
 ---
 
-### 400.
+### 529.What is SerialVersionUID?
 
->
+> **`SerialVersionUID`** is a unique identifier for a `Serializable` class.
+> It ensures that a **deserialized object matches** the class version used during serialization.
+> If versions differ (e.g., fields changed) and `SerialVersionUID` does not match, a `InvalidClassException` is thrown.
+
 ---
 
-### 401.
+### 530.What is a marker interface?
 
->
+> A **marker interface** is an interface that **has no methods or fields** and serves only to **mark** a class with
+> metadata or behavior hints for the JVM or frameworks.
+
 ---
 
-### 402.
+### 531.What is transient?
 
->
+> The **`transient`** keyword marks a field that **should not be serialized**.
+> When an object is serialized, **transient fields are ignored** (they become `null` or default values after
+> deserialization).
+
 ---
 
-### 403.
+### 532.Are static variables serialized?
 
->
+> **No**, static variables are **not serialized**, because they belong to the **class**, not to an **object instance**.
+> Serialization works on **object state**, not on class-level state.
 ---
 
-### 404.
+### 533.What is a Regular Expression?
 
->
+> A **Regular Expression (regex)** is a sequence of characters that defines a **search pattern** for matching text.  
+> It is used to check, extract, or replace parts of a string that match specific patterns.
+
 ---
 
-### 405.
+### 534. Why are Regular Expressions used?
 
->
----
+Regular expressions are used to perform **pattern-based operations** on text such as:
 
-### 406.
+- Validating inputs (emails, phone numbers, passwords)
+- Searching and extracting substrings
+- Replacing specific patterns efficiently
 
->
 ---
 
-### 407.
+### 535. What is a Pattern?
 
->
+> A **Pattern** is a **compiled representation** of a regular expression.  
+> It is created using `Pattern.compile(String regex)` and is immutable and thread-safe.
+
 ---
 
-### 408.
+### 536. What is a Matcher?
 
->
+> A **Matcher** is an engine that performs **matching operations** on a character sequence using a given Pattern.  
+> It provides methods like `find()`, `matches()`, `group()`, and `replaceAll()` to process text.
+
 ---
 
-### 409.
+### 537.Why is the matcher() method of the Pattern class used?
 
->
+> The `matcher()` method links a **Pattern** to a **specific input string**, creating a `Matcher` object to perform the
+> search.
+
 ---
 
-### 410.
+### 538.Why is the matches() method of the Matcher class used?
 
->
+> The `matches()` method checks if the **entire input sequence** matches the regex pattern.  
+> It returns `true` only if the whole string conforms to the pattern.
+
 ---
 
-### 411.
+### 539. Why is the find() method of the Matcher class used?
 
->
+> The `find()` method searches for the **next substring** in the input that matches the pattern.  
+> It is useful for iterating through multiple occurrences of a pattern.
+
 ---
 
-### 412.
+### 540. What is logging?
 
->
+> Logging is the process of recording runtime information about an application’s behavior, errors, or state for
+> monitoring, debugging, and auditing purposes.
+> Logging allows developers and system operators to capture significant events within an application without stopping
+> its execution. Typical logs include error messages, performance metrics, workflow traces, and security-related events.
+> Logging frameworks standardize this process and support configurable output destinations such as console, files,
+> databases, or centralized log management systems.
+
 ---
 
-### 413.
+### 541.Why do we need to log?
 
->
+> We log to monitor application behavior, debug issues, maintain audit trails, and support operational decision-making.
+> Without logging, diagnosing runtime issues or understanding system behavior in production is nearly impossible. Logs
+> allow developers to trace execution paths, detect anomalies, and gather metrics for performance tuning. They also
+> provide historical records for auditing and compliance purposes.
+
 ---
 
-### 414.
+### 542.How many types of log levels are there?
 
->
----
+> Java’s `java.util.logging` defines seven standard log levels: `SEVERE`, `WARNING`, `INFO`, `CONFIG`, `FINE`, `FINER`,
+`FINEST`.
+> These levels indicate the severity or verbosity of log messages:
 
-### 415.
+- `SEVERE`: Critical errors causing application failure.
+- `WARNING`: Potential issues or recoverable errors.
+- `INFO`: General runtime information.
+- `CONFIG`: Configuration or environment details.
+- `FINE`, `FINER`, `FINEST`: Increasingly detailed debugging and tracing information.
 
->
 ---
 
-### 416.
+# MODULE 5
 
->
----
+### 543.What is SSL?
 
-### 417.
+> SSL (Secure Sockets Layer) is a cryptographic protocol that secures data transmitted over a network by encrypting it
+> and providing authentication.
+> SSL establishes an encrypted link between a client and server, ensuring data confidentiality, integrity, and
+> authentication. It relies on public-key cryptography for secure key exchange and symmetric encryption for data
+> transfer.
 
->
 ---
 
-### 418.
+### 544.What is TLS?
 
->
+> TLS (Transport Layer Security) is the successor to SSL, providing secure communication over networks with improved
+> encryption, integrity, and authentication.
+> TLS performs encryption, ensures message integrity with cryptographic hashing, and authenticates parties using
+> certificates. It supports modern cipher suites and provides forward secrecy through ephemeral keys. TLS is widely used
+> for HTTPS, email, and VPNs.
+
 ---
 
-### 419.
+### 545.What is SMTP?
 
->
+> SMTP (Simple Mail Transfer Protocol) is the standard protocol for sending and relaying email over the Internet.
+> SMTP defines how email clients and servers communicate to send messages. It handles message routing, forwarding, and
+> delivery. SMTP typically works over TCP port 25 for server-to-server communication and port 587 for client submission.
+
 ---
 
-### 420.
+### 546.What is a JAR file?
 
->
+> A JAR (Java ARchive) file is a package file format used to aggregate Java class files, resources, and metadata into a
+> single compressed archive.
+> JAR files simplify distribution, deployment, and versioning of Java applications and libraries. They can contain class
+> files, property files, images, and other resources, packaged using ZIP compression and structured with a manifest file
+> for metadata.
+
 ---
 
-### 421.
+### 547.What are the advantages of using a JAR file?
 
->
----
+> JAR files simplify deployment, improve portability, reduce disk usage, and support executable applications.
+> Key advantages:
 
-### 422.
+1. **Packaging:** Consolidates multiple class files and resources into one archive.
+2. **Portability:** Platform-independent; can run anywhere Java is installed.
+3. **Compression:** Reduces file size for distribution.
+4. **Execution:** Supports executable JARs with a defined main class.
+5. **Security:** Supports digital signatures for authenticity verification.
 
->
 ---
 
-### 423.
+### 548.What is a manifest file?
 
->
+> A manifest file is a metadata file within a JAR that describes its contents, configuration, and entry points.
+> Located at `META-INF/MANIFEST.MF`, it includes attributes like `Main-Class`, `Class-Path`, versioning information, and
+> optional custom entries. The JVM reads the manifest to locate the main class when executing a JAR.
+
 ---
 
-### 424.
+### 549.Why is a manifest file needed?
 
->
+> It defines essential metadata such as the main class, classpath, and version, enabling execution and proper runtime
+> behavior of JAR files.
+> Without a manifest, the JVM cannot determine the entry point for an executable JAR. It also helps in specifying
+> library dependencies via `Class-Path` attributes, supporting modularity and version control.
+
 ---
 
-### 425.
+### 550.What is an executable JAR file?
 
->
+> An executable JAR is a JAR file containing a `Main-Class` entry in its manifest, allowing it to be launched directly
+> using `java -jar`.
+> The `Main-Class` attribute specifies the class with the `public static void main(String[] args)` method. The JVM reads
+> the manifest, locates this class, and executes the application. Additional resources and libraries can be bundled in
+> the
+> JAR or referenced via `Class-Path`.
+
 ---
 
-### 426.
+### 551.What is Base64?
 
->
+> Base64 is an encoding scheme that converts binary data into a text representation using 64 ASCII characters.
+> Base64 encodes binary data into characters `A–Z`, `a–z`, `0–9`, `+`, `/`, and uses `=` for padding. It allows binary
+> data to be safely transmitted over text-based protocols such as HTTP, email, or JSON without corruption.
+
 ---
 
-### 427.
+### 552.Why is Base64 encoding and decoding needed?
 
->
+> It ensures binary data can be safely transmitted over channels that only support text, preventing data corruption.
+> Protocols like HTTP headers, XML, JSON, or email (SMTP) may not handle raw binary safely. Base64 encoding transforms
+> the binary into text, preserving the original data during transport. Decoding restores the original binary content.
+
 ---
 
-### 428.
+### 553.How many bytes of memory does Base64 occupy per character?
 
->
+> Each Base64 character represents 6 bits, so 4 Base64 characters encode 3 bytes of data.
+> Since 6 bits are used per character, Base64 expands data size by 4/3 (≈33%). For example, encoding 3 bytes produces 4
+> characters; encoding 1 byte produces 2 characters plus padding.
+
 ---
 
-### 429.
+### 554.How is the Base64 encoding and decoding process performed?
 
->
----
+> Encoding splits binary data into 6-bit blocks and maps each block to a corresponding Base64 character; decoding
+> reverses the process.
 
-### 430.
+- **Encoding:** Take input bytes in 3-byte groups → split into four 6-bit segments → map each segment to the Base64
+  table → add padding if necessary.
+- **Decoding:** Convert Base64 characters back to 6-bit values → combine into 8-bit bytes → remove padding to
+  reconstruct original data.
 
->
 ---
 
-### 431.
+### 555.What is URL Base64?
 
->
+> URL Base64 is a Base64 variant where `+` and `/` are replaced by `-` and `_` to make the output safe for URLs and
+> filenames.
+> Standard Base64 characters `+` and `/` have special meanings in URLs. URL-safe Base64 avoids this by substituting
+> characters and often omits padding. Java supports this via `Base64.getUrlEncoder()` and `Base64.getUrlDecoder()`.
+
 ---
 
-### 432.
+### 556.What is MIME Base64?
 
->
+> MIME Base64 is a variant designed for email and other MIME-based protocols, splitting encoded output into fixed-length
+> lines.
+> MIME Base64 ensures compatibility with email systems that limit line length (typically 76 characters per line). Java
+> supports this via `Base64.getMimeEncoder()` and `Base64.getMimeDecoder()`.
+
 ---
 
-### 433.
+### 557.What is Maven?
 
->
+> Maven is a build automation and dependency management tool for Java projects.
+> Maven standardizes project structure, builds, and reporting. It automatically downloads libraries, plugins, and
+> dependencies from central repositories, reducing manual configuration. Maven uses an XML file `pom.xml` to declare
+> dependencies, build lifecycle, plugins, and project metadata.
+> Maven follows a declarative approach (what to build) rather than imperative (how to build). It supports multi-module
+> projects, transitive dependencies, and integrates with CI/CD pipelines, IDEs, and artifact repositories like Nexus or
+> Artifactory.
+
 ---
 
-### 434.
+### 558.Why is Maven needed?
 
->
+> Maven is needed to automate builds, manage dependencies, enforce standard project structures, and ensure reproducible
+> builds.
+> Without Maven, developers must manually manage library versions, transitive dependencies, compilation, packaging, and
+> testing. Maven centralizes these concerns and integrates with plugins for reporting, testing, and deployment.
+> Maven reduces human error in multi-module or enterprise projects and ensures consistent builds across environments,
+> making it a cornerstone of modern Java development workflows.
+
 ---
 
-### 435.
+### 559.What does "scope" mean in dependencies?
 
->
----
+> Dependency scope defines the visibility, lifecycle, and inclusion of a dependency in compilation, testing, runtime, or
+> packaging.
+> Common Maven scopes:
 
-### 436.
+- `compile` (default): Available in all phases, included in runtime and compile.
+- `provided`: Available at compile time but not packaged (e.g., servlet API).
+- `runtime`: Not needed for compilation but included at runtime.
+- `test`: Only available during testing.
+- `system`: Like `provided` but requires explicit local path.
+- `import`: Imports dependency management from another POM.
 
->
 ---
 
-### 437.
+### 560.What is behaviour parametrization?
 
->
----
+> Behaviour parametrization is the ability to pass behavior (logic) as a parameter to methods or classes.
 
-### 438.
+> Instead of hardcoding functionality, you can define a method that accepts a strategy or function as a parameter. This
+> allows dynamic behavior at runtime without duplicating code. In Java, this is commonly achieved using lambda
+> expressions, method references, or functional interfaces.
 
->
+> This concept underpins functional programming in Java and enables writing generic, reusable code, such as filtering,
+> mapping, or sorting collections with different criteria.
+
 ---
 
-### 439.
+### 561. What problems does behaviour parametrization solve?
 
->
+> It solves code duplication and rigid design issues by enabling flexible and reusable behavior.
+> Without behaviour parametrization, developers must write multiple methods for similar tasks differing only in minor
+> logic. Behaviour parametrization allows passing different strategies (e.g., predicates or comparators) to a single
+> generic method, reducing boilerplate.
+
 ---
 
-### 440.
+### 562. What is a lambda expression?
 
->
----
+> A lambda expression is a concise way to represent an anonymous function in Java.
+> It provides an implementation for a functional interface using a compact syntax: `(parameters) -> expression` or
+`(parameters) -> { statements; }`. Lambdas enable functional programming and streamline operations like filtering,
+> mapping, or sorting collections.
 
-### 441.
+> Introduced in Java 8, lambdas enable internal iteration, reduce boilerplate for anonymous classes, and work seamlessly
+> with the Stream API. The JVM represents lambdas using invokedynamic instructions and generates functional interface
+> instances at runtime.
 
->
 ---
 
-### 442.
+### 563.What rules exist for lambda expressions?
 
->
----
+> Lambdas must match a functional interface’s single abstract method signature, cannot declare new checked exceptions
+> beyond the interface, and can capture effectively final variables.
+> Rules include:
 
-### 443.
+- Must implement a single abstract method of a functional interface.
+- Parameter types can be inferred or explicitly declared.
+- Body can be an expression or block.
+- Can access `final` or effectively final variables from the enclosing scope.
 
->
 ---
 
-### 444.
+### 564.What is the difference between final and effectively final variables?
 
->
+> Final variables are explicitly declared with `final`; effectively final variables are not reassigned after
+> initialization but lack the explicit `final` keyword.
+> Both can be captured in lambda expressions or anonymous classes. Reassignment disqualifies a variable from being
+> effectively final.
+> The JVM uses captured variables by storing them in synthetic fields, ensuring immutability semantics in lambdas.
+
 ---
 
-### 445.
+### 565.In which situations is it appropriate to use a lambda?
 
->
+> Lambdas are appropriate when passing short, stateless behavior, implementing single-method interfaces, or performing
+> collection/stream operations.
+> Common scenarios include filtering, mapping, sorting, event handling, and callbacks. Lambdas simplify code readability
+> by removing boilerplate from anonymous classes.
+> Lambdas should be stateless and side-effect-free for clarity and concurrency safety, as capturing mutable state can
+> lead to subtle bugs.
+
 ---
 
-### 446.
+### 566. What is a functional interface?
 
->
+> A functional interface has exactly one abstract method and can be implemented by a lambda or method reference.
+> Examples: `Runnable`, `Callable`, `Predicate<T>`. Functional interfaces may have default or static methods but only
+> one abstract method is allowed.
+> Functional interfaces are the foundation of Java’s lambda and stream APIs. They allow type-safe, first-class functions
+> in a statically typed language.
+
 ---
 
-### 447.
+### 567.What is the purpose of the @FunctionalInterface annotation?
 
->
+> It explicitly declares an interface as functional, enforcing single abstract method rules at compile time.
+> If an interface annotated with `@FunctionalInterface` has more than one abstract method, the compiler generates an
+> error. This improves code clarity and prevents accidental interface modifications.
+
 ---
 
-### 448.
+### 568.What is the purpose of Predicate?
 
->
+> Predicate represents a boolean-valued function of one argument.
+> It’s used for filtering, matching, or conditional logic. Example: `Predicate<String> nonEmpty = s -> !s.isEmpty();`.
+
 ---
 
-### 449.
+### 569.What is the purpose of Consumer?
 
->
----
+> Consumer represents an operation that takes a single argument and returns no result.
+> It is used for side-effect operations, e.g., printing, updating, or logging elements. Example:
+`Consumer<String> printer = System.out::println;`.
 
-### 450.
 
->
 ---
 
-### 451.
+### 570.What is the purpose of Function?
 
->
+> Function represents a transformation from one type to another.
+> It takes one argument and produces a result. Example: `Function<String, Integer> length = String::length;`.
+
 ---
 
-### 452.
+### 571.What is the purpose of Supplier?
 
->
+> Supplier represents a provider of results without input parameters.
+> Used for lazy evaluation or generating values on demand. Example: `Supplier<Double> random = Math::random;`.
+
 ---
 
-### 453.
+### 572.What is the purpose of UnaryOperator?
 
->
+> UnaryOperator is a special case of Function where input and output types are the same.
+> It is used for operations like incrementing numbers, string transformations, or applying functions repeatedly.
+> Example: `UnaryOperator<Integer> square = x -> x * x;`.
+
 ---
 
-### 454.
+### 573.What is the purpose of BinaryOperator?
 
->
+> BinaryOperator is a special case of BiFunction where both inputs and the output are the same type.
+> It is used for combining two values of the same type. Example: `BinaryOperator<Integer> add = (a, b) -> a + b;`.
+
 ---
 
-### 455.
+### 574.Why are primitive functional interfaces needed?
 
->
+> To avoid boxing overhead when using lambdas with primitive types.
+> Generic functional interfaces (Function, Predicate) require objects, causing autoboxing/unboxing. Primitive interfaces
+> like `IntPredicate`, `DoubleConsumer`, `IntFunction` operate directly on primitives for performance.
+
 ---
 
-### 456.
+### 575.In which situations are primitive functional interfaces used?
 
->
+> When working with streams, arrays, or computations involving primitive types like int, long, or double.
+> Examples: `IntStream.filter()`, `DoubleStream.map()`. They minimize memory allocation and increase throughput in
+> high-performance applications.
 ---
 
-### 457.
+### 576.What is a method reference?
 
->
+> A method reference is a shorthand for a lambda expression that calls an existing method.
+> Syntax: `ClassName::methodName`. Method references improve readability and reduce boilerplate when a lambda only calls
+> a method.
+
 ---
 
-### 458.
+### 577.What types of method references exist?
 
->
----
+> Four types:
 
-### 459.
+1. Static method reference (`Class::staticMethod`)
+2. Instance method reference of a particular object (`instance::method`)
+3. Instance method reference of an arbitrary object of a type (`Class::method`)
+4. Constructor reference (`Class::new`)
 
->
+> Each type simplifies lambda syntax in different contexts (e.g., stream mapping, object creation, sorting).
+
 ---
 
-### 460.
+### 578.What is a constructor as a method reference?
 
->
+> A constructor reference (`Class::new`) refers to a constructor and can be used wherever a supplier or factory function
+> is expected.
+> Example: `Supplier<List<String>> listSupplier = ArrayList::new;` creates a new `ArrayList` instance without writing a
+> lambda like `() -> new ArrayList<>()`.
+
 ---
 
-### 461.
+### 579.What is imperative coding?
 
->
+> Imperative coding explicitly describes **how** to perform a task using statements that change program state step by
+> step.
+> It focuses on control flow (loops, conditionals, mutations) and mutable state. The developer specifies the exact
+> sequence of operations: initialize variables, iterate with `for`/`while`, update counters, modify collections in
+> place.
 ---
 
-### 462.
+### 580.What is declarative coding?
 
->
+> Declarative coding describes **what** the result should be, without specifying the exact control flow or mutation
+> steps.
+> The runtime or framework decides the optimal execution strategy. The code expresses intent (e.g., “filter even numbers
+> and sort them”) and leaves iteration order, parallelism, and memory management to the implementation.
 ---
 
-### 463.
+### 581.Examples of declarative coding?
 
->
+> - SQL: `SELECT name FROM users WHERE age > 30 ORDER BY name`
+> - HTML/CSS: describe structure and presentation, not rendering steps
+> - Java Stream API: `list.stream().filter(x -> x > 0).distinct().sorted()`
+> - Reactive Streams / Project Reactor: `flux.filter(...).map(...).subscribe(...)`
+> - Spring Data query methods: `findByAgeGreaterThan(int age)`
 ---
 
-### 464.
+### 582.What is a stream?
 
->
+> A `java.util.stream.Stream<T>` is a **sequence of elements** supporting sequential and parallel aggregate operations,
+> designed for functional-style processing with lazy evaluation.
 ---
 
-### 465.
+### 583.What is the Stream API?
 
->
+> Introduced in Java 8, the Stream API (`java.util.stream` package) provides a functional approach to process
+> collections:
+> - Lazy evaluation of intermediate operations
+> - Internal iteration (no explicit loops)
+> - Possibility of parallel execution with almost zero code change
+> - Immutable pipeline state
 ---
 
-### 466.
+### 584.What is the difference between streams and collections?
 
->
+| Aspect     | Collection                         | Stream                                                 |
+|------------|------------------------------------|--------------------------------------------------------|
+| Storage    | Eagerly stores elements in memory  | Does not store elements                                |
+| Evaluation | Eager                              | Lazy                                                   |
+| Iteration  | External (developer controls loop) | Internal (hidden inside operations)                    |
+| Mutability | Usually mutable                    | Immutable pipeline                                     |
+| Traversal  | Can be traversed multiple times    | Single-use (consumed by terminal op)                   |
+| Creation   | Add/remove elements directly       | Created from sources (collections, arrays, generators) |
+
 ---
 
-### 467.
+### 585.Ways to create a stream?
 
->
----
+```java
+// 1. From Collection
+List<String> list = List.of("a", "b", "c");
+Stream<String> s1 = list.stream();
+Stream<String> s2 = list.parallelStream();
 
-### 468.
+// 2. From Array
+Stream<String> s3 = Arrays.stream(array);
+Stream<String> s4 = Stream.of("x", "y", "z");
 
->
----
+// 3. Empty stream
+Stream<String> empty = Stream.empty();
 
-### 469.
+// 4. Builder
+Stream<String> built = Stream.<String>builder().add("a").add("b").build();
 
->
+// 5. Infinite streams
+Stream<Integer> naturals = Stream.iterate(1, n -> n + 1);
+Stream<Double> randoms = Stream.generate(Math::random);
+```
+
 ---
 
-### 470.
+### 586.What stream operators exist?
 
->
----
+> Stream operations are divided into intermediate (lazy, return a new Stream) and terminal (eager, produce a result or
+> side-effect) operations.
 
-### 471.
+- Intermediate: `filter`, `map`, `flatMap`, `mapMulti` (Java 16+), `distinct`, `sorted`, `peek`, `limit`, `skip`,
+  `takeWhile`, `dropWhile`, `boxed`, `asDoubleStream`, etc.
 
->
+- Terminal: `forEach`, `forEachOrdered`, `toArray`, `collect`, `reduce`, `anyMatch`, `allMatch`, `noneMatch`,
+  `findFirst`, `findAny`, `count`, `min`, `max`, `sum`, `average`, `toList` (Java 16+), `toSet`, etc.
+
 ---
 
-### 472.
+### 587.What are intermediate operators?
 
->
+> Intermediate operations return a new Stream and are always lazy — they do not process data until a terminal operation
+> is invoked.
+> They form a pipeline of transformations. Examples: `filter(Predicate)`, `map(Function)`, `flatMap(Function)`,
+`distinct()`, `sorted()`, `peek(Consumer)`, `limit(long)`, `skip(long)`, `takeWhile`/`dropWhile` (Java 9+).  
+> Execution is deferred; the pipeline is only a recipe until a terminal operation forces traversal.
 ---
 
-### 473.
+### 588.What are terminal operators?
 
->
+> Terminal operations produce a final result (value, collection, array) or a side-effect and trigger the actual
+> processing of the stream pipeline.
+
+> Common terminal operations: `collect`, `reduce`, `forEach`, `toArray`, `min`/`max`, `count`, `anyMatch`/`allMatch`/
+`noneMatch`, `findFirst`/`findAny`, `forEachOrdered`, mutable reductions via `Collector`.  
+> Once invoked, the stream is consumed and cannot be reused.
 ---
 
-### 474.
+### 589.How many types of intermediate operators are there?
 
->
----
+> Conceptually, intermediate operators are classified into stateless and stateful; there are no other official
+> categories.
 
-### 475.
+- Stateless: each element is processed independently (`filter`, `map`, `peek`, etc.)
+- Stateful: require seeing multiple/all elements or maintaining order/state (`distinct`, `sorted`, `limit`/`skip`,
+  `takeWhile`/`dropWhile`)
 
->
 ---
 
-### 476.
+### 590.What are stateless operators?
 
->
+> Stateless intermediate operations process each element independently without retaining information from previously
+> seen elements.
+> Examples: `filter`, `map`, `flatMap`, `mapMulti`, `peek`.  
+> Each element’s transformation depends only on itself and the supplied function/predicate.
 ---
 
-### 477.
+### 591.What are stateful operators?
 
->
+> Stateful intermediate operations need to see multiple (or all) elements or maintain state across the stream.
+> Examples: `distinct`, `sorted`, `limit`/`skip` (when source is unordered), `takeWhile`/`dropWhile` on unordered
+> streams.  
+> They often require buffering (e.g., `sorted` collects everything) or coordination (e.g., `distinct` in parallel uses a
+`ConcurrentHashMap`).
 ---
 
-### 478.
+### 592.What is the difference between stream() and parallelStream()?
 
->
----
+> `stream()` creates a sequential stream; `parallelStream()` creates a stream backed by the common `ForkJoinPool` (by
+> default) for parallel execution.
 
-### 479.
+- `stream()`: single-threaded, deterministic order (if source is ordered).
+- `parallelStream()`: automatically splits the source via `Spliterator`, processes splits in parallel, combines
+  results.  
+  Performance depends heavily on data size, operation cost, and whether operations are stateless.
 
->
 ---
 
-### 480.
+### 593.Why is String considered lazy? (Note: this question seems misplaced — Strings are immutable, not lazy. Probably meant Stream)
 
->
+> Strings themselves are not lazy. Streams are lazy — probably a confusion in terminology.
+> `String` is an immutable, eagerly materialized char[] (or byte[] in Java 9+ compact strings).  
+> Stream pipelines are lazy: intermediate operations do not execute until a terminal operation is called.
 ---
 
-### 481.
+### 594.What is a Comparator?
 
->
+> `Comparator<T>` is a functional interface that imposes a total ordering on instances of type T.
+> Signature: `int compare(T o1, T o2)`.  
+> Returns negative if o1 < o2, zero if equal, positive if o1 > o2. Must be consistent with `equals` for sorted
+> collections.
 ---
 
-### 482.
+### 595.What changes were made to Comparator in Java 8?
 
->
----
+> Java 8 added a rich set of static and default methods for functional composition.
+> Key additions:
 
-### 483.
+- `comparing(Function)`, `comparingInt/ Long/ Double`
+- `thenComparing`, `thenComparingInt`, etc.
+- `reversed()`, `naturalOrder()`, `nullsFirst`, `nullsLast`
+- `static <T> Comparator<T> comparing(...)` factory methods
 
->
 ---
 
-### 484.
+### 596.What is a Collector?
 
->
----
+> `Collector<T, A, R>` describes a mutable reduction operation that accumulates input elements into a mutable result
+> container (A) and finally produces a result (R).
 
-### 485.
+Three functions:
 
->
+1. Supplier<A> — creates the mutable container
+2. BiConsumer<A,T> — accumulates an element
+3. BinaryOperator<A> — combines two partial containers (for parallel)  
+   Plus characteristics (UNORDERED, CONCURRENT, IDENTITY_FINISH).
+
 ---
 
-### 486.
+### 597.Are collectors terminal operators?
 
->
+> No. `collect()` is the terminal operator; the `Collector` argument describes how to perform the reduction.
+> `stream.collect(Collector)` is the terminal operation.  
+> The `Collector` instance is just a recipe passed to `collect()`.
 ---
 
-### 487.
+### 598.How do collectors work?
 
->
----
+> A `Collector` provides supplier, accumulator, combiner, finisher, and characteristics; the stream framework uses them
+> to perform sequential or parallel mutable reduction.
+> Execution flow (parallel case):
 
-### 488.
+1. Supplier creates partial containers per thread
+2. Accumulator folds elements into each thread’s container
+3. Combiner merges partial containers
+4. Finisher (optional) transforms the final container into the result
 
->
 ---
 
-### 489.
+### 599.What types of collectors do you know, and in which situations are they used?
 
->
----
+> Collectors are grouped into: simple accumulation, grouping/partitioning, joining, reducing/folding, and downstream
+> collectors.
 
-### 490.
+- **To collection**: `toList()`, `toSet()`, `toCollection()`, `toUnmodifiableList/Set/Map` (Java 10+)  
+  → When you need the elements in a specific collection type.
+- **To map**: `toMap()`, `toConcurrentMap()`, `toUnmodifiableMap`  
+  → Key-value aggregation (e.g., id → object).
+- **Grouping & partitioning**: `groupingBy()`, `partitioningBy()`, `groupingByConcurrent()`  
+  → Multi-level maps, classic SQL-like GROUP BY.
+- **Joining**: `joining()`, `joining(delimiter, prefix, suffix)`  
+  → Concatenate `CharSequence` elements (typically Strings).
+- **Reducing & summarizing**: `reducing()`, `summarizingInt/Long/Double()`, `counting()`, `minBy/maxBy()`,
+  `averagingInt`  
+  → Custom or statistical reductions.
+- **Downstream collectors**: used inside `groupingBy` / `partitioningBy` (e.g., `mapping()`, `collectingAndThen()`,
+  `flatMapping()` Java 9+).
 
->
+> The most performant collectors are those with `Characteristics.CONCURRENT` and `UNORDERED` (e.g., `toConcurrentMap`,
+`groupingByConcurrent` with unordered source) — they avoid unnecessary synchronization and merging.
 ---
 
-### 491.
+### 600.What are primitive streams?
 
->
+> Primitive streams (`IntStream`, `LongStream`, `DoubleStream`) are specialized stream implementations that work
+> directly with primitive types instead of boxed objects.
+> They avoid autoboxing overhead and provide primitive-specific operations (`sum()`, `average()`, `range()`, etc.).
 ---
 
-### 492.
+### 601.What kind of classes are URL and URLConnection?
 
->
----
+> `URL` is a lightweight resource identifier; `URLConnection` (and its subclass `HttpURLConnection`) is a legacy,
+> blocking, protocol-handler-based client API introduced in JDK 1.0.
 
-### 493.
+- `URL` only represents a Uniform Resource Locator — it has almost no behavior beyond parsing and equality.
+- `URLConnection` is an abstract class with pluggable protocol handlers (http, https, ftp, file, jar).
+- `HttpURLConnection` is the concrete implementation for HTTP — very low-level, callback-oriented, blocking-only.
 
->
 ---
 
-### 494.
+### 602.Why was the new HTTP API (HttpClient) added to Java even though URL and URLConnection classes exist?
 
->
----
+> `HttpURLConnection` lacks HTTP/2, proper async support, reactive streams, modern timeouts, connection pooling, and a
+> clean immutable API — all mandatory for contemporary services.
+> Key missing features in the old API:
 
-### 495.
+- No HTTP/2 (multiplexing, server push)
+- No built-in non-blocking/asynchronous usage
+- No reactive-streams body handlers
+- Poor header/protocols API, painful cookie handling
+- Connection pooling existed but was poorly documented and not HTTP/2-aware
+- No first-class WebSocket support
 
->
 ---
 
-### 496.
+### 603.What is HttpClient?
 
->
----
+> `java.net.http.HttpClient` (Java 11+, backported/incubating in 9/10) is a modern, high-performance, fully
+> asynchronous-capable HTTP client supporting HTTP/1.1, HTTP/2, and WebSocket.
 
-### 497.
+> Key features:
 
->
+- Immutable `HttpRequest` and `HttpResponse<T>`
+- Synchronous (`send`) and asynchronous (`sendAsync`) methods
+- Body handlers: `String`, `byte[]`, `InputStream`, `Publisher<ByteBuffer>` (reactive streams)
+- Built-in HTTP/2 multiplexing and connection pooling
+- Configurable redirect, cookie, authenticator policies
+- WebSocket builder in the same class
+
 ---
 
-### 498.
+### 604.What are the advantages of HttpClient over the old networking API (URLConnection)?
 
->
+| Feature                              | HttpURLConnection          | HttpClient (Java 11+)                |
+|--------------------------------------|----------------------------|--------------------------------------|
+| HTTP/2 & multiplexing                | No                         | Yes                                  |
+| Asynchronous API                     | No                         | Yes (`sendAsync`, CompletableFuture) |
+| Reactive streams bodies              | No                         | Yes (`BodyHandlers.ofPublisher`)     |
+| Immutable request/response           | No                         | Yes                                  |
+| Fluent builder API                   | No                         | Yes                                  |
+| Proper timeouts (connect/read/write) | Added late, awkward        | First-class per request              |
+| Connection pooling & keep-alive      | Limited, buggy in old JDKs | Efficient, HTTP/2-aware              |
+| WebSocket support                    | No                         | Built-in                             |
+| Header/cookie API                    | Stringly-typed, painful    | Type-safe, multi-value headers       |
+
 ---
 
-### 499.
+### 605.What is reflection?
 
->
+> Reflection is the ability of a running Java program to inspect and manipulate classes, methods, fields, constructors,
+> and annotations at runtime — even private ones.
+> Package: `java.lang.reflect` + core methods on `java.lang.Class`.  
+> Allows dynamic instantiation, method invocation, field access/modification, proxy creation.
 ---
 
-### 500.
+### 606.Why is the reflection API needed?
 
->
----
+> Because many frameworks (Spring, Hibernate, Jackson, JUnit, Mockito, etc.) need to work with arbitrary user classes
+> without knowing them at compile time.
 
-### 501.
+- Dependency injection & AOP
+- Serialization / deserialization
+- ORM & JPA entity mapping
+- Testing (mocking, test runners)
+- Dynamic proxies & service loaders
+- Annotation-driven code generation
 
->
 ---
 
-### 502.
+### 607.What are the main classes of the reflection API?
 
->
+| Class / Interface                               | Role                                                      |
+|-------------------------------------------------|-----------------------------------------------------------|
+| `java.lang.Class<T>`                            | Entry point — represents a loaded type                    |
+| `java.lang.reflect.Field`                       | Field access (including private)                          |
+| `java.lang.reflect.Method`                      | Method metadata & invocation                              |
+| `java.lang.reflect.Constructor<T>`              | Constructor metadata & instantiation                      |
+| `java.lang.reflect.Parameter`                   | Parameter names & metadata (Java 8+, needs `-parameters`) |
+| `java.lang.reflect.AccessibleObject`            | Base class with `setAccessible(true)`                     |
+| `java.lang.reflect.Proxy` + `InvocationHandler` | Dynamic proxy creation                                    |
+| `java.lang.Module` (Java 9+)                    | Strong encapsulation & module reflection                  |
+
 ---
 
-### 503.
+### 608.When should the reflection API be used?
 
->
----
+**Use reflection only when:**
 
-### 504.
+- Implementing frameworks, libraries, or tools
+- Writing serializers, ORMs, DI containers
+- Processing annotations at runtime
+- Interacting with code you don’t control (plugin systems)
 
->
----
+**Never use reflection in regular application code** — it:
 
-### 505.
+- Breaks compile-time safety
+- Hurts JIT optimization (slow invoke, no inlining)
+- Fails with module encapsulation (`--illegal-access=deny`, default since Java 16)
+- Complicates security manager and native image (GraalVM) support
 
->
 ---
 
-### 506.
+### 609.What is an annotation in Java?
 
->
+> Annotations are type-safe, compile-time or runtime metadata attached to program elements (classes, methods, fields,
+> parameters, etc.).
+> They are the standard way to add declarative configuration or markers that tools and frameworks consume via reflection
+> or annotation processors.
 ---
 
-### 507.
+### 610.What types of annotations exist?
 
->
+| Type                 | Example                                 | Processed when          |
+|----------------------|-----------------------------------------|-------------------------|
+| Marker               | `@Override`, `@Test`                    | Compile-time or runtime |
+| Single-value         | `@SuppressWarnings("unchecked")`        | Compile-time or runtime |
+| Normal (multi-value) | `@RequestMapping(path="/", method=GET)` | Usually runtime         |
+| Meta-annotations     | `@Retention`, `@Target`, `@Documented`  | Compile-time only       |
+| Repeatable (Java 8+) | `@MyTest`, `@MyTests` container         | Runtime (via container) |
+
 ---
 
-### 508.
+### 611.What is the purpose of the @Override annotation?
 
->
+> Tells the compiler to verify that the method actually overrides a superclass or implements an interface method.
+> It is a safety net — catches typos, signature mismatches, and accidental overloads at compile time. Always use it.
 ---
 
-### 509.
+### 612.What is the purpose of the @FunctionalInterface annotation?
 
->
+> Instructs the compiler to enforce that the interface has exactly one abstract method (SAM).
+> Purely documentation + compile-time check. Required for lambda targeting and helps IDEs/refactoring tools.
 ---
 
-### 510.
+### 613.What is the purpose of the @Deprecated annotation?
 
->
+> Marks a program element as discouraged; triggers compiler warnings when used.
+> Java 9+ added `forRemoval(true)` to signal impending deletion.
+> Use it with proper javadoc and `forRemoval` flag to communicate deprecation lifecycle clearly.
 ---
 
-### 511.
+### 614.What is the purpose of the @SuppressWarnings annotation?
 
->
+> Instructs the compiler to suppress specific warnings for the annotated element.
+`"unchecked"`, `"deprecation"`, `"rawtypes"`, `"unused"`, `"serial"`
+> Use sparingly and locally — never suppress warnings globally.
 ---
 
-### 512.
+### 615.What is the purpose of the @SafeVarargs annotation?
 
->
+> Suppresses unchecked warnings for varargs methods/constructor with generic types, asserting that the method does not
+> perform unsafe operations on the varargs parameter.
+> Mandatory for safe generic varargs methods (e.g., `Lists.of`, `Stream.of`) — without it you get a compiler warning
+> about
+> potential heap pollution.
 ---
 
-### 513.
+### 616.How can a custom annotation be created?
 
->
----
+**Short answer:**
+> Define an `@interface` with meta-annotations controlling retention, target, repeatability, etc.
+**Example (modern Java 21+ style):**
 
-### 514.
+```java
+import java.lang.annotation.*;
 
->
----
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+@Repeatable(Schedules.class)   // optional, for multiple usage
+public @interface Schedule {
+    String cron();
 
-### 515.
+    String timezone() default "UTC";
 
->
----
+    boolean enabled() default true;
+}
 
-### 516.
+// Container for repeatable
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+@interface Schedules {
+    Schedule[] value();
+}
+```
 
->
+| Meta-annotation         | Value / Meaning                                                                                         | Typical usage                              |
+|-------------------------|---------------------------------------------------------------------------------------------------------|--------------------------------------------|
+| `@Retention`            | Controls how long the annotation is retained                                                            |                                            |
+|                         | • `RetentionPolicy.SOURCE` – discarded after compilation (e.g., `@Override`)                            | Compiler-only checks                       |
+|                         | • `RetentionPolicy.CLASS`  – kept in bytecode, not available via reflection (rare)                      | Bytecode tools                             |
+|                         | • `RetentionPolicy.RUNTIME` – kept in bytecode and readable via reflection (most common for frameworks) | Spring, Jackson, Hibernate, etc.           |
+| `@Target`               | Specifies which program elements the annotation can be applied to                                       |                                            |
+|                         | Common values: `TYPE`, `FIELD`, `METHOD`, `PARAMETER`, `CONSTRUCTOR`, `ANNOTATION_TYPE`, `MODULE`, etc. | Restrict scope                             |
+| `@Documented`           | If present, the annotation will appear in generated Javadoc                                             | Public APIs                                |
+| `@Inherited`            | If present, the annotation is automatically inherited by subclasses                                     | Rarely needed (e.g., `@Entity` in old JPA) |
+| `@Repeatable` (Java 8+) | Allows the same annotation to be applied multiple times to the same element                             | Requires a container annotation            |
+
 ---
 
-### 517.
+### 617.
 
 >
 ---
 
-### 518.
+### 618.
 
 >
 ---
 
-### 519.
+### 619.
 
 >
 ---
 
-### 520.
+### 620.
 
 >
 ---
 
-### 521.
+### 621.
 
 >
 ---
 
-### 522.
+### 622.
 
 >
 ---
 
-### 523.
+### 623.
 
 >
 ---
 
-### 524.
+### 624.
 
 >
 ---
 
-### 525.
+### 625.
 
 >
 ---
 
-### 526.
+### 626.
 
 >
 ---
 
-### 527.
+### 627.
 
 >
 ---
 
-### 528.
+### 628.
 
 >
 ---
 
-### 529.
+### 629.
 
 >
 ---
 
-### 530.
+### 630.
 
 >
 ---
 
-### 531.
+### 631.
 
 >
 ---
 
-### 532.
+### 632.
 
 >
 ---
 
-### 533.
+### 633.
 
 >
 ---
 
-### 534.
+### 634.
 
 >
 ---
 
-### 535.
+### 635.
 
 >
 ---
 
-### 536.
+### 636.
 
 >
 ---
 
-### 537.
+### 637.
 
 >
 ---
 
-### 538.
+### 638.
 
 >
 ---
 
-### 539.
+### 639.
 
 >
 ---
 
-### 540.
+### 640.
 
 >
 ---
 
-### 541.
+### 641.
 
 >
 ---
 
-### 542.
+### 642.
 
 >
 ---
 
-### 543.
+### 643.
 
 >
 ---
 
-### 544.
+### 644.
 
 >
 ---
 
-### 545.
+### 645.
 
 >
 ---
 
-### 546.
+### 646.
 
 >
 ---
 
-### 547.
+### 647.
 
 >
 ---
 
-### 548.
+### 648.
 
 >
 ---
 
-### 549.
+### 649.
 
 >
 ---
 
-### 550.
+### 650.
 
 >
 ---
 
-### 551.
+### 651.
 
 >
 ---
 
-### 552.
+### 652.
 
 >
 ---
 
-### 553.
+### 653.
 
 >
 ---
 
-### 554.
+### 654.
 
 >
 ---
 
-### 555.
+### 655.
 
 >
 ---
 
-### 556.
+### 656.
 
 >
 ---
 
-### 557.
+### 657.
 
 >
 ---
 
-### 558.
+### 658.
 
 >
 ---
 
-### 559.
+### 659.
 
 >
 ---
 
-### 560.
+### 660.
 
 >
 ---
 
-### 561.
+### 661.
 
 >
 ---
 
-### 562.
+### 662.
 
 >
 ---
 
-### 563.
+### 663.
 
 >
 ---
 
-### 564.
+### 664.
 
 >
 ---
 
-### 565.
+### 665.
 
 >
 ---
 
-### 566.
+### 666.
 
 >
 ---
 
-### 567.
+### 667.
 
 >
 ---
 
-### 568.
+### 668.
 
 >
 ---
 
-### 569.
+### 669.
 
 >
 ---
 
-### 570.
+### 670.
 
 >
 ---
 
-### 571.
+### 671.
 
 >
 ---
 
-### 572.
+### 672.
 
 >
 ---
 
-### 573.
+### 673.
 
 >
 ---
 
-### 574.
+### 674.
 
 >
 ---
 
-### 575.
+### 675.
 
 >
 ---
 
-### 576.
+### 676.
 
 >
 ---
 
-### 577.
+### 677.
 
 >
 ---
 
-### 578.
+### 678.
 
 >
 ---
 
-### 579.
+### 679.
 
 >
 ---
 
-### 580.
+### 680.
 
 >
 ---
 
-### 581.
+### 681.
 
 >
 ---
 
-### 582.
+### 682.
 
 >
 ---
 
-### 583.
+### 683.
 
 >
 ---
 
-### 584.
+### 684.
 
 >
 ---
 
-### 585.
+### 685.
 
 >
 ---
 
-### 586.
+### 686.
 
 >
 ---
 
-### 587.
+### 687.
 
 >
 ---
 
-### 588.
+### 688.
 
 >
 ---
 
-### 589.
+### 689.
 
 >
 ---
 
-### 590.
+### 690.
 
 >
 ---
 
-### 591.
+### 691.
 
 >
 ---
 
-### 592.
+### 692.
 
 >
 ---
 
-### 593.
+### 693.
 
 >
 ---
 
-### 594.
+### 694.
 
 >
 ---
 
-### 595.
+### 695.
 
 >
 ---
 
-### 596.
+### 696.
 
 >
 ---
 
-### 597.
+### 697.
 
 >
 ---
 
-### 598.
+### 698.
 
 >
 ---
 
-### 599.
+### 699.
 
 >
 ---
 
-### 600.
+### 700.
 
 >
 ---

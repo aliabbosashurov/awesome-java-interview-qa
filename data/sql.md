@@ -1,3 +1,5 @@
+# SQL (PostgreSQL based)
+
 ### 1.What is a database?
 
 > A database is an organized collection of structured data stored electronically and accessed/controlled via a software
