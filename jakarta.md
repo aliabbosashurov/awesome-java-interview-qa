@@ -140,6 +140,8 @@
 
 ### 12.What is a Servlet?
 
+[Servlet Life Cycle](assets/servlet-life-cycle.jpg)
+
 > A Servlet is a server-side Java component that processes HTTP requests and generates responses.
 > It extends the server’s capabilities by providing a programmable endpoint. Typical Servlets implement `HttpServlet`
 > and override methods like `doGet()` or `doPost()` to handle REST-like interactions.
