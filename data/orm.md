@@ -430,6 +430,8 @@ public class BooleanToYNConverter implements AttributeConverter<Boolean, String>
 
 ### 25.How do the main EntityManager methods work (persist, merge, remove, find, refresh)?
 
+![Hibernate Entity Lifecycle](/assets/hibernate-entity-lifecycle.jpg)
+
 - **persist:** Inserts a new entity and makes it managed.
 - **merge:** Updates or attaches a detached entity to the persistence context.
 - **remove:** Deletes a managed entity.

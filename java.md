@@ -858,6 +858,7 @@ String s2 = new String("Hello");
 ### 95. What types of relationships exist between Classes?
 
 > Classes in Java can have three main relationships: **Is-A**, **Has-A**, and **Uses-A**.
+![OOP relationships](/assets/oop-relationships.png)
 
 - **Is-A (Inheritance)** – defines a superclass–subclass relationship.
 - **Has-A (Composition/Aggregation)** – defines ownership or containment.
@@ -1760,7 +1761,7 @@ dynamic binding)**.
 
 > Modern JVMs support several Garbage Collectors, each optimized for different workloads and latency requirements.
 
-[GC Types](assets/gc_types.png)
+![GC Types](assets/gc_types.png)
 
 1. **Serial GC (`-XX:+UseSerialGC`)**
     - Single-threaded, simple, and best for small applications or single-core systems.

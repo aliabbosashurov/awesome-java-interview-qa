@@ -616,17 +616,25 @@
 
 ---
 
-### 37. What is the difference between singleton and prototype scopes in Spring?
+### 37.What are all the bean scopes in Spring Boot?
 
-> Singleton = one instance per context; Prototype = new instance each request.
+> Spring Boot supports several bean scopes: Singleton, Prototype, Request, Session, Application, and WebSocket.
 
-- **Singleton**: container creates one bean instance; reused everywhere.
-- **Prototype**: container creates a new instance each time it’s injected or requested.
+![Spring Bean Scopes](/assets/spring-bean-scopes.png)
 
-> Singletons are lifecycle-managed; prototypes are not fully managed—Spring does not call destroy callbacks for them.
+- **Singleton**: Default scope. One instance per Spring container; reused everywhere.
+- **Prototype**: New instance created each time it is requested from the container.
+- **Request**: One instance per HTTP request; only valid in web-aware Spring contexts.
+- **Session**: One instance per HTTP session; useful for session-scoped data.
+- **Application**: One instance per ServletContext; shared across all requests and sessions in a web application.
+- **WebSocket**: One instance per WebSocket session; used in WebSocket-based applications.
 
-> Singleton is cached and shared; prototype is ephemeral and newly created per lookup.
-
+> Lifecycle differences: Singleton beans are fully managed by Spring, including initialization and destruction
+> callbacks. Prototype beans are only initialized by Spring; destroy callbacks are not called. Request, Session, and
+> Application scopes are managed per web context. WebSocket beans are managed per WebSocket session.
+>
+> Choosing scope depends on your use case: Singleton for shared stateless beans, Prototype for stateful beans,
+> Request/Session/Application for web-specific scopes, and WebSocket for WebSocket session state.
 ---
 
 ### 38. What is lazy loading in Spring?
@@ -3788,6 +3796,8 @@ public class UserService {
 
 > The Spring bean lifecycle is the sequence of steps a bean undergoes from instantiation to destruction within the
 > Spring IoC container.
+
+<img src="/assets/spring-bean-lifecycle.jpg" alt="Spring bean scopes" height="550" width="700"/>
 
 - **Instantiation:** The Spring container creates a new instance of the bean using constructor injection or default
   constructor.
