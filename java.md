@@ -1515,11 +1515,16 @@ dynamic binding)**.
 
 ### 165. What are the types of memory?
 
-1. **Heap Memory** – Stores objects and their associated data.
-2. **Stack Memory** – Stores method calls, local variables, and references.
-3. **Metaspace (formerly PermGen)** – Stores class metadata and static information.
-4. **Code Cache** – Stores compiled native code (JIT-compiled bytecode).
-5. **Native Memory** – Used by the JVM and native libraries outside the managed heap.
+1. **Heap Memory** – Stores all Java objects and arrays. Managed by the Garbage Collector.
+2. **Stack Memory** – Stores method call frames, local variables, and references. Each thread has its own stack.
+3. **Metaspace (replaced PermGen in JDK 8+)** – Stores class metadata, method information, and runtime constants. Static
+   variables are stored in the heap, not Metaspace.
+4. **PC Register** – Each thread has its own program counter that stores the address of the next JVM instruction to
+   execute.
+5. **Native Method Stack / Native Memory** – Used for executing native code (JNI calls) and JVM internal operations
+   outside the managed heap.
+
+![Memory Management](/assets/memory-management.png)
 
 > Each memory area serves distinct roles — Stack for execution, Heap for object lifecycle, and Metaspace for type
 > metadata.  
@@ -2478,6 +2483,9 @@ Execution order:
 
 > The **Java Collections Framework (JCF)** is a unified architecture that provides a set of interfaces, classes, and
 > algorithms to store, manage, and manipulate groups of objects efficiently.
+
+<img src="/assets/collections-in-java.jpg" alt="Collections Hierarchy" height="600" width="1100">
+
 ---
 
 ### 252. What are the advantages of the Collections Framework?
@@ -6113,6 +6121,33 @@ Regular expressions are used to perform **pattern-based operations** on text suc
 > Functional interfaces are the foundation of Java’s lambda and stream APIs. They allow type-safe, first-class functions
 > in a statically typed language.
 
+### Functional Interfaces
+
+| SUPPLIER        | CONSUMER          | PREDICATE        | FUNCTION            | Unary Operators     | Binary Operators     |
+|-----------------|-------------------|------------------|---------------------|---------------------|----------------------|
+| Supplier<T>     | Consumer<T>       | Predicate<T>     | Function<T,R>       | DoubleUnaryOperator | DoubleBinaryOperator |
+| BooleanSupplier | BiConsumer<T,U>   | BiPredicate<T,U> | BiFunction<T,U,R>   | IntUnaryOperator    | IntBinaryOperator    |
+| DoubleSupplier  | DoubleConsumer    | DoublePredicate  | DoubleFunction<R>   | LongUnaryOperator   | LongBinaryOperator   |
+| IntSupplier     | IntConsumer       | IntPredicate     | IntFunction<R>      |
+| LongSupplier    | LongConsumer      | LongPredicate    | LongFunction<R>     |
+|                 | ObjDoubleConsumer |                  | UnaryOperator<T>    |
+|                 | ObjIntConsumer    |                  | BinaryOperator<T>   |
+|                 | ObjLongConsumer   |                  | ToDoubleFunction<T> |
+|                 |                   |                  | ToIntFunction<T>    |
+|                 |                   |                  | ToLongFunction<T>   |
+|                 |                   |                  | ToDoubleBiFunction  |
+|                 |                   |                  | ToIntBiFunction     |
+|                 |                   |                  | ToLongBiFunction    |
+
+---
+
+### Primitive Converters
+
+| Double → Int         | Int → Double        | Long → Double        |
+|----------------------|---------------------|----------------------|
+| DoubleToIntFunction  | IntToDoubleFunction | LongToDoubleFunction |
+| DoubleToLongFunction | IntToLongFunction   | LongToIntFunction    |
+
 ---
 
 ### 567.What is the purpose of the @FunctionalInterface annotation?
@@ -6385,7 +6420,7 @@ Stream<Double> randoms = Stream.generate(Math::random);
 > Java 8 added a rich set of static and default methods for functional composition.
 > Key additions:
 
-- `comparing(Function)`, `comparingInt/ Long/ Double`
+- `comparing(Function)`, `comparingInt | Long | Double`
 - `thenComparing`, `thenComparingInt`, etc.
 - `reversed()`, `naturalOrder()`, `nullsFirst`, `nullsLast`
 - `static <T> Comparator<T> comparing(...)` factory methods
@@ -6397,12 +6432,10 @@ Stream<Double> randoms = Stream.generate(Math::random);
 > `Collector<T, A, R>` describes a mutable reduction operation that accumulates input elements into a mutable result
 > container (A) and finally produces a result (R).
 
-Three functions:
-
-1. Supplier<A> — creates the mutable container
-2. BiConsumer<A,T> — accumulates an element
-3. BinaryOperator<A> — combines two partial containers (for parallel)  
-   Plus characteristics (UNORDERED, CONCURRENT, IDENTITY_FINISH).
+1. `Supplier<A>` — creates the mutable container
+2. `BiConsumer<A,T>` — accumulates an element
+3. `BinaryOperator<A>` — combines two partial containers (for parallel) Plus characteristics (UNORDERED, CONCURRENT,
+   IDENTITY_FINISH).
 
 ---
 
@@ -6431,7 +6464,7 @@ Three functions:
 > Collectors are grouped into: simple accumulation, grouping/partitioning, joining, reducing/folding, and downstream
 > collectors.
 
-- **To collection**: `toList()`, `toSet()`, `toCollection()`, `toUnmodifiableList/Set/Map` (Java 10+)  
+- **To collection**: `toList()`, `toSet()`, `toCollection()`, `toUnmodifiableList | Set | Map` (Java 10+)  
   → When you need the elements in a specific collection type.
 - **To map**: `toMap()`, `toConcurrentMap()`, `toUnmodifiableMap`  
   → Key-value aggregation (e.g., id → object).
