@@ -4,13 +4,15 @@ concepts.
 
 #### Topics:
 
-[Git](devops/git.md)  
-[Java](java.md)  
-[SOLID](solid.md)  
-[SQL (PostgreSQL)](data/sql.md)  
-[ACID](data/acid.md)  
-[JDBC](data/jdbc.md)  
-[ORM](data/orm.md)  
-[Jakarta](jakarta.md)     
-[Spring & Spring Boot](spring.md)  
-[MongoDB](data/mongo.md)
+| Topic                             | Number of QA |
+|-----------------------------------|--------------|
+| [Git](devops/git.md)              | 50+          |
+| [Java](java.md)                   | 600+         |
+| [SOLID](solid.md)                 | Article      |
+| [SQL (PostgreSQL)](data/sql.md)   | 90+          |
+| [ACID](data/acid.md)              | Article      |
+| [JDBC](data/jdbc.md)              | 20+          |
+| [ORM](data/orm.md)                | 40+          |
+| [Jakarta](jakarta.md)             | 40+          |
+| [Spring & Spring Boot](spring.md) | 200+         |
+| [MongoDB](data/mongo.md)          | 15+          |
