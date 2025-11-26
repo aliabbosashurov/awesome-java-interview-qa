@@ -21,6 +21,8 @@
 
 ### 2. What are the main components of Kafka?
 
+![Kafka Architecture](/assets/kafka-architecture.png)
+
 > Kafka consists of **Producers, Consumers, Brokers, Topics, Partitions, and a metadata service (ZooKeeper or KRaft)**
 > that manage cluster coordination.
 
