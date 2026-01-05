@@ -16,6 +16,8 @@ concepts.
 | [Jakarta](jakarta.md)                           | 40+          |
 | [Spring & Spring Boot](spring.md)               | 200+         |
 | [Microservices](microservices/microservices.md) | 40+          |          
+| [Testing](testing.md)                           | 55+          |
+| [Design Patterns](design_patterns.md)           | 25+          |
 | [MongoDB](data/mongo.md)                        | 15+          |
 | [Redis](data/redis.md)                          | 40+          |
 | [Kafka](messaging/kafka.md)                     | 30+          |
