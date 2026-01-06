@@ -70,6 +70,33 @@
 > class loading, memory management, and an execution engine.
 > Modern JVMs combine interpreter and JIT compilation with sophisticated GC algorithms, making Java applications both
 > portable and high-performance.
+
+### 7.1 What is the JIT (Just-In-Time) Compiler?
+
+> JIT compiles frequently executed bytecode into optimized native machine code at runtime.
+
+- Starts with interpreted execution.
+- Identifies “hot” methods via profiling.
+- Compiles hot paths using advanced optimizations (inlining, escape analysis).
+- Deoptimizes if runtime assumptions change.
+
+> HotSpot uses tiered compilation (C1 + C2) to balance startup time and peak performance.
+> JIT enables Java to achieve near-native performance by dynamically optimizing code based on real execution patterns,
+> making it superior to static ahead-of-time compilation for long-running server applications.
+
+### 7.2 What is the difference between HotSpot and other JVM implementations?
+
+> HotSpot is the most widely used JVM, optimized for adaptive runtime performance.
+
+- HotSpot uses tiered JIT compilation and aggressive profiling.
+- Other JVMs (OpenJ9, GraalVM) optimize for startup time or memory footprint.
+- HotSpot focuses on throughput and long-lived applications.
+
+> HotSpot’s speculative optimizations and deoptimization mechanisms are unmatched in maturity.
+> While alternative JVMs may excel in niche scenarios (fast startup, native images), HotSpot remains the reference JVM
+> for high-throughput, enterprise-grade Java workloads.
+
+
 ---
 
 ### 8. What is Bytecode?
@@ -807,6 +834,58 @@ String s2 = new String("Hello");
 
 ---
 
+### 89.1 What is the equals() and hashCode() contract, and why must you override both together?
+
+> equals() defines logical equality, while hashCode() defines hash-based grouping; both must be consistent to ensure
+> correct behavior in hash-based collections.
+
+- **equals() contract**
+    - Reflexive: `x.equals(x)` is true.
+    - Symmetric: `x.equals(y)` ⇔ `y.equals(x)`.
+    - Transitive: if `x.equals(y)` and `y.equals(z)`, then `x.equals(z)`.
+    - Consistent: repeated calls return the same result if state doesn’t change.
+    - Non-nullity: `x.equals(null)` is false.
+- **hashCode() contract**
+    - If `x.equals(y)` is true, `x.hashCode() == y.hashCode()` **must** be true.
+    - Unequal objects may share the same hash code (collisions allowed).
+- **Why override both**
+    - Hash-based collections (`HashMap`, `HashSet`, `ConcurrentHashMap`) use `hashCode()` to locate buckets and
+      `equals()` to resolve collisions.
+    - Overriding only one breaks collection invariants, causing lookup failures, duplicates, or data loss.
+
+> HashMap first uses hashCode() to select a bucket; equals() is only invoked within that bucket—if hashes differ,
+> equals() is never checked.
+> equals() and hashCode() together define an object’s identity in Java collections. Overriding equals() without
+> hashCode() (or vice versa) violates the collection contract, leading to subtle, production-grade bugs. Correct
+> implementations ensure logical equality, stable hashing, predictable performance, and correctness across all
+> hash-based
+> data structures in modern Java.
+
+---
+
+### 89.2 What is the difference between == and .equals() for Strings (and in general)?
+
+> `==` compares object references (identity), while `.equals()` compares logical equality (state/content), as defined by
+> the class.
+
+- **General behavior**
+    - `==` checks whether two references point to the **same object in memory**.
+    - `.equals()` checks whether two objects are **logically equal** according to the class’s implementation.
+- **For String specifically**
+    - `String.equals()` compares the **sequence of characters**.
+    - String literals may reference the same object due to **string interning**, making `==` sometimes return true.
+    - Strings created with `new String(...)` are distinct objects even if content is identical.
+- **Collections and APIs**
+    - Collections rely on `.equals()` (and `hashCode()`), never `==`, for equality.
+    - Using `==` for logical comparison leads to incorrect behavior outside trivial cases.
+
+> String interning means identical literals may share the same reference, but this is an optimization—not a semantic
+> guarantee to rely on.
+> In Java, `==` answers “are these the same object?”, while `.equals()` answers “do these objects represent the same
+> value?”. For Strings and almost all domain objects, logical equality is required, making `.equals()` the correct and
+> safe choice. Using `==` for value comparison is brittle, JVM-dependent, and violates object-oriented design
+> principles.
+
 ### 90. Why do we need Access Modifiers?
 
 > Access modifiers define the visibility and accessibility of classes, methods, and fields in Java.
@@ -1244,6 +1323,31 @@ dynamic binding)**.
 5. From Java 8+, interfaces can have **default** and **static** methods.
 6. From Java 9+, they can also have **private** methods.
 
+---
+
+### 136.1 What are default and static methods in interfaces (Java 8+)?
+
+> They allow interfaces to provide behavior without breaking implementations.
+
+- Default methods add instance behavior.
+- Static methods belong to the interface itself.
+- Resolve diamond inheritance explicitly.
+
+> Default methods are dispatched virtually but do not participate in state.
+> These features enabled interface evolution and laid groundwork for functional programming in Java.
+
+---
+
+### 136.2 What is Pattern Matching for instanceof (Java 14+)?
+
+> It combines type check and cast into a single construct.
+
+- Eliminates explicit casting.
+- Improves readability and safety.
+- Scoped variable binding.
+
+> Compiler ensures variable is only accessible in valid flow paths.
+> Pattern matching reduces boilerplate and aligns Java with modern, expressive type systems.
 ---
 
 ### 137. What are the rules of an Interface?
@@ -1732,6 +1836,30 @@ dynamic binding)**.
 > When an object is passed to a method, a **copy of the reference** (not the object) is passed.  
 > Hence, the method can modify the object’s internal state but cannot make the reference point to a new object.
 
+### 182.1 What are SoftReference, WeakReference, and PhantomReference?
+
+> They are reference types that allow the JVM to manage object lifecycle more flexibly than strong references, primarily
+> for memory-sensitive designs.
+
+- **SoftReference**
+    - Cleared only when the JVM is under memory pressure.
+    - Commonly used for memory-sensitive caches.
+    - Objects may survive multiple GC cycles.
+- **WeakReference**
+    - Cleared eagerly during the next GC cycle once no strong references exist.
+    - Used in canonicalized mappings (e.g., `WeakHashMap`).
+- **PhantomReference**
+    - Always cleared before GC reclaiming memory.
+    - Does not allow object access (`get()` always returns null).
+    - Used with `ReferenceQueue` for post-mortem cleanup.
+
+> JVM GC treats reference strengths differently; PhantomReference is integrated into GC finalization phases without
+> resurrection risk.
+> These references provide fine-grained control over object lifetime. SoftReference suits cache-like use cases,
+> WeakReference supports leak-free mappings, and PhantomReference enables deterministic cleanup without relying on
+> finalizers, aligning with modern GC and memory-management best practices.
+
+
 ---
 
 ### 183. What are Variable Arguments?
@@ -1881,6 +2009,19 @@ dynamic binding)**.
 > Sealed classes restrict which other classes can extend or implement them.
 > Introduced in Java 17, a sealed class uses the `permits` keyword to declare permitted subclasses explicitly.  
 > Each subclass must declare itself as `final`, `sealed`, or `non-sealed`.
+---
+
+### 192.1 How do sealed classes/interfaces use the permits clause?
+
+> The permits clause restricts which classes can extend or implement a type.
+
+- Enforces closed hierarchies.
+- Enables exhaustive pattern matching.
+- Enhances domain modeling.
+
+> JVM verifies permitted subclasses at class-loading time.
+> Sealed types provide stronger invariants and safer polymorphism, especially in algebraic domain models.
+
 ---
 
 ### 193. Why are Sealed Classes used?
@@ -2234,6 +2375,20 @@ Execution order:
 - No need for explicit `finally` blocks
 - Prevents resource leaks
 - Cleaner, safer code
+
+--- 
+
+### 228.1 What is a multi-catch block (Java 7)?
+
+> A multi-catch block allows handling multiple exception types in a single catch clause.
+
+- Uses `|` to combine exception types.
+- Reduces code duplication when handling logic is identical.
+- Exception parameter is implicitly `final`.
+
+> The compiler ensures all caught exceptions are unrelated by inheritance to avoid unreachable code.
+> Multi-catch improves readability and maintainability by consolidating equivalent error-handling paths while preserving
+> strong compile-time guarantees.
 
 ---
 
@@ -4133,21 +4288,24 @@ We use `Properties` to:
 
 ---
 
-### 400.What is Concurrency?
+### 400.Difference between concurrency and parallelism in Java?
 
-> Concurrency is the ability to deal with multiple tasks or operations **in progress** at the same time — not
-> necessarily executed simultaneously.
+> Concurrency is about dealing with multiple tasks at once; parallelism is about executing multiple tasks
+> simultaneously.
 
-> Concurrency means structuring programs so that multiple units of work overlap in execution.  
-> This includes both **true parallelism** (on multiple cores) and **interleaved execution** (on a single core).  
-> It focuses on *composition* — managing independent tasks efficiently, rather than raw CPU-level parallel execution.
-> Concurrency ≠ parallelism.
+- **Concurrency**
+    - Tasks make progress together but not necessarily at the same time.
+    - Achieved via context switching on a single CPU core.
+    - Focuses on structure, responsiveness, and correctness.
+- **Parallelism**
+    - Tasks execute at the same time on multiple CPU cores.
+    - Focuses on performance and throughput.
+- Java supports concurrency via threads and parallelism via multi-core execution (ForkJoinPool, parallel streams).
 
-- **Concurrency** is about *structure and coordination*.
-- **Parallelism** is about *execution at the same time*.
+> JVM schedules threads concurrently, while actual parallelism depends on available CPU cores and OS scheduling.
+> Concurrency is a program structure property, while parallelism is an execution property. Well-designed Java systems
+> use concurrency to manage tasks and parallelism to maximize hardware utilization.
 
-> In Java, concurrency is managed via thread pools, the ForkJoin framework, and the `java.util.concurrent` package — all
-> backed by JVM-managed threads mapped to native OS threads.
 
 ---
 
@@ -4246,7 +4404,19 @@ public interface Runnable {
 
 ---
 
-### 406.Is it better to create a thread using Runnable or by extending the Thread class?
+### 405.1 Can we start a thread twice?
+
+> No, calling `start()` twice throws `IllegalThreadStateException`.
+
+- Thread lifecycle is one-time.
+- After termination, a thread cannot be restarted.
+
+> JVM enforces strict thread state transitions.
+> Always create a new Thread instance.
+
+---
+
+### 406. Is it better to create a thread using Runnable or by extending the Thread class?
 
 > Implementing `Runnable` is better than extending `Thread`.
 > Reasons:
@@ -4259,6 +4429,19 @@ public interface Runnable {
 `run()` method.  
 > Subclassing `Thread` couples logic with thread management — an anti-pattern for maintainable concurrency.
 
+--- 
+
+### 406.1 What is structured concurrency in Java?
+
+> Structured concurrency scopes concurrent tasks as a single unit of work.
+
+- Ensures child tasks complete before parent exits.
+- Simplifies error handling and cancellation.
+- Introduced via `StructuredTaskScope` (Java 21).
+
+> Built on virtual threads, enforcing lifecycle containment at the JVM level.
+> Structured concurrency replaces ad-hoc thread management with safer, more readable concurrency models aligned with
+> modern system design.
 
 ---
 
@@ -4374,6 +4557,35 @@ class Main {
 
 ---
 
+### 413.1 Why wait() must be called inside a synchronized block?
+
+> Because `wait()` operates on the monitor of the object.
+
+- Releases the monitor atomically.
+- Suspends the thread until notified.
+- Without owning the monitor, JVM throws `IllegalMonitorStateException`.
+
+> wait/notify are low-level monitor primitives tied to intrinsic locks.
+> Calling `wait()` inside `synchronized` ensures atomic release and reacquisition of the monitor.
+
+---
+
+### 413.2 Difference between sleep() and wait() in multithreaded systems?
+
+> `sleep()` pauses execution; `wait()` coordinates threads.
+
+- **sleep()**
+    - Does not release locks.
+    - Time-based.
+- **wait()**
+    - Releases the monitor.
+    - Event-based (notify/notifyAll).
+
+> `wait()` integrates with JVM monitors; `sleep()` is purely scheduler-based.
+> Use `wait()` for coordination, `sleep()` only for timing or delays.
+
+---
+
 ### 414.When does a thread’s state change to RUNNABLE?
 
 > A thread enters **RUNNABLE** when it’s eligible to run but not necessarily executing on the CPU.
@@ -4483,6 +4695,28 @@ NORM_PRIORITY)**.
 
 ---
 
+### 422.1 What happens if two threads update a non-atomic variable?
+
+> Updates may interleave, causing lost updates and data corruption.
+
+- Read-modify-write operations are not atomic.
+- One thread may overwrite another thread’s update.
+- Final value becomes unpredictable.
+
+> The JVM may interleave bytecode instructions across threads without any ordering guarantees.
+> Non-atomic shared mutations without synchronization lead directly to race conditions and undefined behavior.
+
+---
+
+### 422.2 What is false sharing and how does it impact performance?
+
+> False sharing occurs when threads modify variables on the same cache line.
+
+- Cache line invalidation causes performance collapse.
+- Happens even when variables are logically independent.
+
+---
+
 ### 423.How can we prevent a race condition?
 
 > By ensuring **mutual exclusion** — only one thread accesses shared data at a time.
@@ -4559,6 +4793,18 @@ class Main {
 > - **Multiple conditions** for complex synchronization
 > - **Fair ordering** option
 > - **Better performance** under high contention
+
+### 427.1 What is ReadWriteLock?
+
+> ReadWriteLock allows concurrent reads while enforcing exclusive writes.
+
+- Multiple readers can hold the lock simultaneously.
+- Writers gain exclusive access.
+- Reduces contention in read-heavy workloads.
+
+> Implementations (e.g., ReentrantReadWriteLock) may suffer writer starvation if not carefully configured.
+> ReadWriteLock improves scalability in read-dominant systems but must be used judiciously to avoid fairness and
+> complexity pitfalls.
 
 ---
 
@@ -4644,6 +4890,20 @@ monitor** to call them.
 > registers or local caches.
 > It provides a **happens-before** relationship: a write to a volatile variable happens-before every subsequent read of
 > that same variable.
+
+---
+
+### 435.1 Why is volatile not a replacement for synchronization?
+
+> `volatile` guarantees visibility, not atomicity or mutual exclusion.
+
+- Ensures reads/writes go directly to main memory.
+- Prevents instruction reordering around the volatile variable.
+- Does **not** protect compound actions (read-modify-write).
+- Cannot enforce invariants across multiple variables.
+
+> Volatile inserts memory barriers but does not provide locking or critical-section semantics.
+> Use `volatile` for state flags and visibility guarantees; use synchronization or locks for atomicity and invariants.
 
 ---
 
@@ -4883,20 +5143,20 @@ monitor** to call them.
 
 ---
 
-### 451.What is the difference between livelock and deadlock?
+### 451. Deadlock vs Livelock vs Starvation — real examples?
 
-> Both **livelock** and **deadlock** are concurrency pathologies, but their behavior differs fundamentally.
-> - In a **deadlock**, threads are **stuck indefinitely**, waiting for each other — *no progress occurs*.
-> - In a **livelock**, threads are **active but not progressing**, repeatedly changing states in response to each
-    other — *continuous motion without advancement*.
+> All are liveness failures but with different causes.
 
-> For example, two threads constantly yielding or retrying lock acquisition can enter livelock — they keep running but
-> make no forward progress.
+- **Deadlock**
+    - Threads block forever waiting on each other’s locks.
+- **Livelock**
+    - Threads keep reacting to each other but make no progress.
+- **Starvation**
+    - A thread never gets CPU or locks due to scheduling or priority.
 
-> At the system level, deadlock represents **permanent blocking**, while livelock represents **resource starvation due
-to over-coordination**.  
-> Both can be mitigated using randomized backoff, better lock ordering, or concurrent algorithms that decouple
-> contention handling.
+> Deadlock is a state; livelock is behavior; starvation is scheduling unfairness.
+> Proper lock ordering, backoff strategies, and fair locks prevent these issues.
+
 ---
 
 ### 452.What are Atomics?
@@ -4987,7 +5247,6 @@ to over-coordination**.
 > - **Thread confinement:** Limit object access to a single thread (no sharing).
 > - **Immutable objects:** Design objects whose state never changes after construction.
 > - **Concurrent collections:** Use thread-safe structures like `ConcurrentHashMap`, `CopyOnWriteArrayList`, etc.
-
 ---
 
 ### 459.How many thread-safe collections are there in Java?
@@ -5027,6 +5286,23 @@ to over-coordination**.
 > worst-case performance.  
 > It ensures thread safety while maintaining near-constant-time operations for `get()`, `put()`, and `remove()` under
 > heavy concurrency.
+
+---
+
+### 460.1 ConcurrentHashMap vs synchronizedMap ?
+
+> ConcurrentHashMap uses fine-grained concurrency; synchronizedMap uses a single lock.
+
+- **synchronizedMap**
+    - Global lock for all operations.
+    - High contention.
+- **ConcurrentHashMap**
+    - Lock-free reads.
+    - CAS + bucket-level locking for writes.
+
+> Java 8+ ConcurrentHashMap uses node-level synchronization, not segments.
+> ConcurrentHashMap provides scalability and predictable performance under contention.
+
 
 ---
 
@@ -5108,6 +5384,42 @@ to over-coordination**.
 > They improve performance by reusing existing threads and controlling concurrency levels in large-scale applications.
 > Instead of spawning new threads for each task, thread pools maintain a fixed or dynamic number of worker threads that
 > fetch tasks from an internal queue.
+
+### 467.1 What is ForkJoinPool and its purpose?
+
+> ForkJoinPool is a work-stealing thread pool designed for divide-and-conquer parallelism.
+
+- Tasks recursively split into subtasks.
+- Worker threads steal work from others to reduce idle time.
+- Optimized for CPU-bound workloads.
+
+> Uses lightweight `ForkJoinTask` and per-thread deque structures to minimize contention.
+> ForkJoinPool underpins parallel streams and structured concurrency primitives, offering scalable parallelism with
+> minimal synchronization overhead.
+
+### 467.2 What is the difference between parallelStream() and ForkJoinPool?
+
+> parallelStream() is a high-level abstraction built on top of ForkJoinPool.
+
+- `parallelStream()` uses the common ForkJoinPool by default.
+- ForkJoinPool allows explicit configuration (parallelism, isolation).
+- parallelStream() is harder to control and debug.
+
+> Blocking tasks in parallel streams can starve the common pool.
+> Use parallelStream() for simple data-parallel tasks; prefer explicit ForkJoinPool for controlled, production-grade
+> parallelism.
+
+### 467.3 What is CompletableFuture? How does it differ from Future?
+
+> CompletableFuture is an asynchronous, non-blocking computation abstraction with composability.
+
+- Supports chaining (`thenApply`, `thenCompose`).
+- Allows explicit completion.
+- Enables exception handling pipelines.
+
+> CompletableFuture integrates with ForkJoinPool and avoids blocking threads.
+> Unlike Future, CompletableFuture models asynchronous workflows declaratively, making it essential for modern reactive
+> and concurrent Java designs.
 
 ---
 
@@ -5654,6 +5966,46 @@ Keep using **ThreadLocal** when:
 - The `Path`, `Files`, and `FileVisitor` APIs for safer and more powerful file operations.
 - Better **exception handling**, **symbolic link support**, and **atomic operations**.
 - Asynchronous channels (`AsynchronousFileChannel`, `AsynchronousSocketChannel`) for non-blocking I/O.
+
+---
+
+### 520.1 What is a Memory-Mapped File (MappedByteBuffer)?
+
+> A memory-mapped file maps file contents directly into virtual memory.
+
+- Uses `FileChannel.map`.
+- Avoids explicit read/write syscalls.
+- Enables OS-level paging and caching.
+
+> Backed by OS virtual memory; data is loaded on-demand via page faults.
+> Memory-mapped files provide zero-copy I/O and are ideal for large, random-access files, but require careful resource
+> management to avoid address-space pressure.
+
+---
+
+### 520.2 What is a Selector in NIO?
+
+> A Selector allows a single thread to manage multiple non-blocking channels.
+
+- Monitors channels for readiness (read/write/connect).
+- Core to scalable I/O servers.
+- Reduces thread-per-connection overhead.
+
+> Internally relies on OS multiplexing mechanisms (epoll, kqueue, poll).
+> Selectors enable high-throughput, event-driven architectures fundamental to modern networking frameworks like Netty.
+
+---
+
+### 520.3 What is the difference between ByteBuffer and CharBuffer?
+
+> ByteBuffer handles raw bytes, while CharBuffer handles UTF-16 characters.
+
+- ByteBuffer is used for I/O and binary protocols.
+- CharBuffer represents character data.
+- Conversion requires Charset encoders/decoders.
+
+> ByteBuffer aligns with native memory and channels; CharBuffer is a higher-level abstraction.
+> Use ByteBuffer for transport and storage, and CharBuffer for text processing after decoding.
 
 ---
 
@@ -6280,6 +6632,19 @@ Regular expressions are used to perform **pattern-based operations** on text suc
 > designed for functional-style processing with lazy evaluation.
 ---
 
+### 582.1 What is lazy evaluation in streams?
+
+> Stream operations execute only when a terminal operation is invoked.
+
+- Intermediate operations are not executed immediately.
+- Enables operation fusion.
+- Avoids unnecessary computation.
+
+> JVM can optimize pipelines into a single traversal.
+> Lazy evaluation makes streams efficient and expressive, particularly for large or infinite data sources.
+
+---
+
 ### 583.What is the Stream API?
 
 > Introduced in Java 8, the Stream API (`java.util.stream` package) provides a functional approach to process
@@ -6339,6 +6704,19 @@ Stream<Double> randoms = Stream.generate(Math::random);
 - Terminal: `forEach`, `forEachOrdered`, `toArray`, `collect`, `reduce`, `anyMatch`, `allMatch`, `noneMatch`,
   `findFirst`, `findAny`, `count`, `min`, `max`, `sum`, `average`, `toList` (Java 16+), `toSet`, etc.
 
+--- 
+
+### 586.1 What is the difference between map and flatMap?
+
+> map transforms elements; flatMap flattens nested structures.
+
+- map: one-to-one transformation.
+- flatMap: one-to-many followed by flattening.
+- Essential for stream composition.
+
+> flatMap prevents nested streams and improves pipeline clarity.
+
+> Use map for simple transformations; use flatMap to model dependent or hierarchical data flows effectively.
 ---
 
 ### 587.What are intermediate operators?
@@ -6699,14 +7077,28 @@ public @interface Schedule {
 
 ---
 
-### 617.
+### 617. What is ServiceLoader and SPI (Service Provider Interface)?
 
->
+> SPI enables pluggable implementations discovered at runtime via ServiceLoader.
+
+- Interfaces define contracts.
+- Providers are loaded from `META-INF/services`.
+- Decouples API from implementation.
+
+> Uses lazy loading and classpath/module-path scanning.
+> SPI underpins extensible systems (JDBC, logging, drivers) and remains a cornerstone of Java’s modular architecture.
 ---
 
-### 618.
+### 618.What is JShell?
 
->
+> JShell is an interactive Java REPL introduced in Java 9.
+
+- Executes snippets without full class setup.
+- Useful for experimentation and learning.
+- Supports imports, methods, and state.
+
+> Runs on the same compiler and JVM infrastructure.
+> JShell accelerates prototyping and debugging by removing boilerplate while preserving full Java semantics.
 ---
 
 ### 619.
