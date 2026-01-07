@@ -97,6 +97,22 @@
 
 ---
 
+### 5.1 What is the role of SpringApplication class?
+
+> SpringApplication bootstraps a Spring Boot application and initializes the application context.
+
+- Creates and refreshes ApplicationContext
+- Performs classpath scanning and auto-configuration
+- Loads environment properties and profiles
+- Registers listeners and initializers
+- Starts embedded web servers if present
+
+> SpringApplication orchestrates the entire startup lifecycle using SpringFactoriesLoader and ApplicationContextFactory.
+> SpringApplication acts as the entry point and coordinator of Spring Boot’s auto-configuration model, abstracting
+> complex startup logic into a predictable, extensible bootstrap process aligned with modern cloud-native applications.
+
+---
+
 ### 6. Advantages of Spring Boot over classic Spring?
 
 > No XML, no manual configuration, quicker startup, embedded servers, and built-in production tooling.
@@ -306,6 +322,27 @@
 
 ---
 
+### 17.1 Why is constructor injection preferred in Spring? Why does circular dependency fail with constructor injection but not setter injection?
+
+> Constructor injection enforces immutability and explicit dependencies but makes circular dependencies unresolvable at
+> creation time.
+
+- Ensures all required dependencies are provided at object creation
+- Makes beans immutable and easier to reason about and test
+- Prevents partially initialized beans
+- Encourages fail-fast behavior during context startup
+- Setter injection allows bean instantiation first, then dependency wiring later
+
+> With constructor injection, Spring must fully resolve all dependencies before instantiating a bean. Circular
+> dependencies create an unsatisfiable graph, whereas setter injection allows early bean references to break the cycle.
+> Constructor injection is preferred because it produces immutable, fully initialized beans and exposes design flaws
+> early. Circular dependencies fail with constructor injection because Spring cannot create either bean without the
+> other,
+> while setter injection works due to Spring’s two-phase instantiation and early singleton exposure mechanism.
+
+
+---
+
 ### 18. What is a Bean?
 
 > A bean is an object managed by the Spring IoC container.
@@ -320,6 +357,40 @@
 
 > A bean is a fully lifecycle-managed object inside the Spring context, created and configured according to metadata
 > supplied by the application.
+
+---
+
+### 18.1 Explain Bean Lifecycle in Spring
+
+> The Spring bean lifecycle is the sequence of steps a bean undergoes from instantiation to destruction within the
+> Spring IoC container.
+
+<img src="/assets/spring-bean-lifecycle.jpg" alt="Spring bean scopes" height="550" width="700"/>
+
+- **Instantiation:** The Spring container creates a new instance of the bean using constructor injection or default
+  constructor.
+- **Populate properties:** Spring sets the bean’s properties using dependency injection (DI).
+- **Aware interfaces callback:** If the bean implements `BeanNameAware`, `BeanFactoryAware`, or
+  `ApplicationContextAware`, the container injects the corresponding context information.
+- **BeanPostProcessor (pre-initialization):** `postProcessBeforeInitialization` methods of registered
+  `BeanPostProcessor` implementations are called.
+- **Initialization:**
+    - The bean’s `afterPropertiesSet()` method from `InitializingBean` is called.
+    - Or a custom `init-method` is invoked if configured.
+- **BeanPostProcessor (post-initialization):** `postProcessAfterInitialization` methods are called.
+- **Bean is ready for use:** The bean is fully initialized and can be used by the application.
+- **Destruction:**
+    - For singleton beans, when the container shuts down, `DisposableBean.destroy()` or a configured `destroy-method` is
+      called.
+    - For prototype beans, destruction is the responsibility of the client code.
+
+> Internally, Spring maintains a lifecycle context per bean, applying dependency injection first, then processing
+> through `BeanPostProcessor` chains, allowing AOP proxies and other interceptors to wrap the bean before it is returned
+> for use. Singleton beans are cached in the container, while prototype beans are created anew for each request.
+> The Spring bean lifecycle ensures proper instantiation, dependency injection, initialization, optional proxying, and
+> destruction hooks. Leveraging `Aware` interfaces, `BeanPostProcessor`s, and lifecycle callbacks enables advanced
+> scenarios like custom initialization logic, resource management, and dynamic proxy wrapping in modern Spring
+> applications.
 
 ---
 
@@ -339,6 +410,28 @@
 > An IoC container orchestrates bean creation, wiring, lifecycle, scope handling, and cross-cutting functionality,
 > acting
 > as the core runtime engine of Spring.
+
+---
+
+### 19.1 When exactly does Spring choose JDK dynamic proxies vs CGLIB?
+
+> Spring uses JDK proxies when a bean implements an interface; otherwise, it falls back to CGLIB.
+
+- JDK dynamic proxy:
+    - Requires at least one interface
+    - Proxies only interface methods
+    - Lower memory footprint
+- CGLIB proxy:
+    - Subclasses the target class
+    - Required when no interface is present
+    - Cannot proxy final classes or final methods
+- Forced via `proxyTargetClass = true`
+
+> Proxy choice is decided at runtime by ProxyFactory based on interfaces and configuration flags.
+> By default, Spring prefers JDK proxies for simplicity and safety, switching to CGLIB only when necessary.
+> Understanding this distinction is critical when dealing with class-based features like @Transactional, method
+> visibility, and final methods.
+
 
 ---
 
@@ -372,6 +465,27 @@
 
 > Spring supports bean wiring through annotations, Java configuration, and XML, each feeding metadata into a unified,
 > centralized BeanFactory model.
+
+---
+
+### 21.1 How does Spring resolve circular dependencies internally?
+
+> Spring resolves circular dependencies using early singleton exposure during the bean lifecycle.
+
+- Bean instantiation happens before dependency injection
+- Spring registers an ObjectFactory for early bean references
+- Dependent beans receive a reference to an incompletely initialized bean
+- Works only for singleton-scoped beans
+- Not supported for constructor injection or prototype scope
+
+> Internally, Spring uses three-level caching: singletonObjects, earlySingletonObjects, and singletonFactories to
+> resolve circular references.
+
+> Spring’s circular dependency resolution relies on exposing early references during setter-based dependency injection.
+> This mechanism avoids deadlock at the cost of temporarily exposing partially constructed beans, which is why
+> constructor
+> injection deliberately disallows it.
+
 
 ---
 
@@ -546,6 +660,26 @@
 
 > Conditional beans allow dynamic, environment-aware bean creation, enabling flexible configuration and
 > auto-configuration mechanisms.
+
+---
+
+### 32.1  What is @Conditional? Difference between @ConditionalOnBean and @ConditionalOnMissingBean?
+
+> @Conditional enables conditional bean registration based on runtime state.
+
+- @Conditional:
+    - Base mechanism using Condition interface
+    - Evaluated during configuration phase
+- @ConditionalOnBean:
+    - Registers bean only if another bean exists
+- @ConditionalOnMissingBean:
+    - Registers bean only if no matching bean exists
+- Heavily used in Spring Boot auto-configuration
+
+> Conditions are evaluated before bean instantiation, during configuration class parsing.
+> @Conditional is the foundation of Spring Boot’s auto-configuration model. @ConditionalOnBean and
+> @ConditionalOnMissingBean enable modular, override-friendly designs where user-defined beans can seamlessly replace
+> framework defaults.
 
 ---
 
@@ -2582,6 +2716,24 @@ spring.lifecycle.timeout-per-shutdown-phase = 30s
 
 ---
 
+### 151.1 Why does @Transactional not work on private methods?
+
+> @Transactional does not work on private methods because Spring applies transactions via proxies, and private methods
+> cannot be intercepted.
+
+- Spring AOP is proxy-based, not bytecode-weaving by default
+- Proxies intercept only external method calls
+- Private methods are not visible to subclasses or proxies
+- Self-invocation bypasses the proxy entirely
+
+> The transaction interceptor is applied at the proxy boundary, not within the target class itself.
+> @Transactional works only on public (and sometimes protected/package-private) methods invoked through the Spring
+> proxy. Private methods are excluded by design, reinforcing the principle that transactional boundaries should be part
+> of
+> the public service contract.
+
+---
+
 ### 152. What is the purpose of the @Modifying annotation?
 
 > `@Modifying` marks a repository query method as a **write operation** (INSERT, UPDATE, DELETE) in Spring Data JPA.
@@ -3792,37 +3944,23 @@ public class UserService {
 
 ---
 
-### 212.Explain Bean Lifecycle in Spring
+### 212. What is ApplicationRunner vs CommandLineRunner?
 
-> The Spring bean lifecycle is the sequence of steps a bean undergoes from instantiation to destruction within the
-> Spring IoC container.
+> Both are startup hooks, but ApplicationRunner provides structured access to application arguments.
 
-<img src="/assets/spring-bean-lifecycle.jpg" alt="Spring bean scopes" height="550" width="700"/>
+- CommandLineRunner:
+    - Receives raw String[] arguments
+    - Simpler, less structured
+- ApplicationRunner:
+    - Receives ApplicationArguments
+    - Supports option and non-option arguments
+- Both run after ApplicationContext is fully initialized
+- Execution order can be controlled with @Order
 
-- **Instantiation:** The Spring container creates a new instance of the bean using constructor injection or default
-  constructor.
-- **Populate properties:** Spring sets the bean’s properties using dependency injection (DI).
-- **Aware interfaces callback:** If the bean implements `BeanNameAware`, `BeanFactoryAware`, or
-  `ApplicationContextAware`, the container injects the corresponding context information.
-- **BeanPostProcessor (pre-initialization):** `postProcessBeforeInitialization` methods of registered
-  `BeanPostProcessor` implementations are called.
-- **Initialization:**
-    - The bean’s `afterPropertiesSet()` method from `InitializingBean` is called.
-    - Or a custom `init-method` is invoked if configured.
-- **BeanPostProcessor (post-initialization):** `postProcessAfterInitialization` methods are called.
-- **Bean is ready for use:** The bean is fully initialized and can be used by the application.
-- **Destruction:**
-    - For singleton beans, when the container shuts down, `DisposableBean.destroy()` or a configured `destroy-method` is
-      called.
-    - For prototype beans, destruction is the responsibility of the client code.
+> ApplicationRunner is better suited for complex startup logic requiring parsed arguments.
+> Both interfaces enable post-startup execution, but ApplicationRunner is preferred in modern applications due to its
+> richer argument model and cleaner separation of concerns.
 
-> Internally, Spring maintains a lifecycle context per bean, applying dependency injection first, then processing
-> through `BeanPostProcessor` chains, allowing AOP proxies and other interceptors to wrap the bean before it is returned
-> for use. Singleton beans are cached in the container, while prototype beans are created anew for each request.
-> The Spring bean lifecycle ensures proper instantiation, dependency injection, initialization, optional proxying, and
-> destruction hooks. Leveraging `Aware` interfaces, `BeanPostProcessor`s, and lifecycle callbacks enables advanced
-> scenarios like custom initialization logic, resource management, and dynamic proxy wrapping in modern Spring
-> applications.
 ---
 
 ### 213.
