@@ -98,7 +98,7 @@
 > backups.  
 > Git uses commands like `push`, `pull`, and `fetch` to synchronize the two.
 
-<img src="/assets/git-workflow.png" height=700 weight=1000></img>
+<img src="/assets/git-workflow.png" height=700>
 ---
 
 ### 11. How do you configure your name and email in Git?

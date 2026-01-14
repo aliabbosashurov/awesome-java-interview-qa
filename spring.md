@@ -1181,6 +1181,7 @@ public class LoggingAspect {
 > Spring MVC’s request-processing pipeline is highly extensible: custom resolvers, filters, interceptors, exception
 > handlers (@ControllerAdvice), and message converters integrate seamlessly for REST and web apps.
 
+<img src="/assets/spring-req-resp-lifecycle.JPG" height=600>
 ---
 
 ### 61. What are the advantages of Spring MVC over other web frameworks?
