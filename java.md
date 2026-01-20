@@ -2639,7 +2639,7 @@ Execution order:
 > The **Java Collections Framework (JCF)** is a unified architecture that provides a set of interfaces, classes, and
 > algorithms to store, manage, and manipulate groups of objects efficiently.
 
-<img src="/assets/collections-in-java.jpg" alt="Collections Hierarchy" height="600" width="1100">
+![Collection and Map](assets/collection-map.svg)
 
 ---
 
